@@ -1,0 +1,86 @@
+# PHP
+*.log
+*.tmp
+*.cache
+
+# Environment and Configuration
+.env
+.env.local
+.env.production
+config.local.php
+
+# Database
+*.sql.backup
+*.db
+*.sqlite
+*.sqlite3
+
+# Composer
+/vendor/
+composer.phar
+composer.lock
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+/logs/
+error.log
+access.log
+debug.log
+
+# Uploads and temporary files
+/uploads/temp/
+/uploads/cache/
+/tmp/
+/temp/
+
+# Cache directories
+/cache/
+/storage/cache/
+
+# Session files
+/sessions/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+desktop.ini
+
+# Sensitive files (add these to .env instead)
+# db.php with hardcoded credentials
+# Any files containing API keys or passwords
+
+# Development tools
+phpunit.phar
+/.phpunit.cache
+/build/
+/coverage/
+
+# Node modules (if using any frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Excel/PDF generation temporary files
+/PhpOffice/temp/
+*.xlsx.tmp
+*.pdf.tmp

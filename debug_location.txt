@@ -1,0 +1,6 @@
+EmployeeID: AKCBSTF0002 | UserLat: 5.65248 | UserLon: -0.147456 | BranchID: GH1510010 | BranchLat: 7.541099 | BranchLon: -1.205297 | DistanceKM: 240.3209273308 | AllowedRadiusKM: 10.00
+EmployeeID: AKCBSTF0002 | UserLat: 5.65248 | UserLon: -0.1540096 | BranchID: GH1510010 | BranchLat: 7.541099 | BranchLon: -1.205297 | DistanceKM: 239.96982187793 | AllowedRadiusKM: 0.20
+EmployeeID: AKCBSTF0002 | UserLat: 5.65248 | UserLon: -0.1540096 | BranchID: GH1510010 | BranchLat: 7.541099 | BranchLon: -1.205297 | DistanceKM: 239.96982187793 | AllowedRadiusKM: 0.20
+EmployeeID: AKCBSTF0001 | UserLat: 5.636096 | UserLon: -0.1703936 | BranchID: GH1510010 | BranchLat: 7.541099 | BranchLon: -1.205297 | DistanceKM: 240.70195090413 | AllowedRadiusKM: 0.20
+EmployeeID: AKCBSTF0001 | UserLat: 5.636096 | UserLon: -0.1703936 | BranchID: GH1510013 | BranchLat: 7.384000 | BranchLon: -1.355973 | DistanceKM: 234.37047883437 | AllowedRadiusKM: 0.20
+EmployeeID: AKCBSTF0002 | UserLat: 5.636096 | UserLon: -0.1703936 | BranchID: GH1510010 | BranchLat: 7.541099 | BranchLon: -1.205297 | DistanceKM: 240.70195090413 | AllowedRadiusKM: 0.20
