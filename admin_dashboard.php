@@ -119,6 +119,7 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
                 <div class="collapse ps-4" id="deviceMenu">
                     <a href="device_dashboard.php" class="nav-link">Device Dashboard</a>
                     <a href="device_registry.php" class="nav-link">Register Device</a>
+                    <a href="wearable_assignments.php" class="nav-link">Assign Wearables</a>
                 </div>
             </li>
             <li class="nav-item mb-2"><a href="wellness_dashboard.php" class="nav-link"><i class="bi bi-heart-pulse"></i><span>Employee Wellness</span></a></li>

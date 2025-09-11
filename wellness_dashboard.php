@@ -138,6 +138,9 @@ $employees = $conn->query("
                 <a href="admin_dashboard.php" class="btn btn-outline-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Back to Dashboard
                 </a>
+                <a href="wearable_assignments.php" class="btn btn-outline-info me-2">
+                    <i class="bi bi-smartwatch"></i> Manage Assignments
+                </a>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignWearableModal">
                     <i class="bi bi-plus-lg"></i> Assign Wearable
                 </button>
