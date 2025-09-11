@@ -83,6 +83,54 @@ function calculateFatigueLevel($heartRate, $stepCount, $sleepQuality, $activityL
     else return 'rested';
 }
 
+// Function to automatically trigger camera monitoring for stress events
+function triggerCameraMonitoring($conn, $employeeId, $alertId, $stressLevel) {
+    try {
+        // Get nearby cameras for this employee
+        $camerasQuery = $conn->prepare("
+            SELECT ecm.*, c.DeviceName, c.Location, c.Identifier
+            FROM tbl_employee_camera_mapping ecm
+            JOIN tbl_devices c ON ecm.CameraID = c.DeviceID
+            WHERE ecm.EmployeeID = ? AND ecm.IsActive = 1 AND c.IsActive = 1
+            ORDER BY ecm.ProximityScore DESC
+            LIMIT 3
+        ");
+        $camerasQuery->execute([$employeeId]);
+        $cameras = $camerasQuery->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($cameras)) {
+            return false; // No cameras available
+        }
+        
+        // Create camera trigger record
+        $triggerStmt = $conn->prepare("
+            INSERT INTO tbl_camera_triggers (
+                EmployeeID, AlertID, TriggerTime, StressLevel, 
+                CamerasActivated, Status
+            ) VALUES (?, ?, NOW(), ?, ?, 'active')
+        ");
+        $triggerStmt->execute([$employeeId, $alertId, $stressLevel, count($cameras)]);
+        
+        // Create camera sessions for each camera
+        foreach ($cameras as $camera) {
+            $sessionToken = bin2hex(random_bytes(16));
+            $sessionStmt = $conn->prepare("
+                INSERT INTO tbl_camera_sessions (
+                    EmployeeID, CameraID, AlertID, SessionToken, 
+                    StartTime, ExpiresAt, IsActive
+                ) VALUES (?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 30 MINUTE), 1)
+            ");
+            $sessionStmt->execute([$employeeId, $camera['CameraID'], $alertId, $sessionToken]);
+        }
+        
+        return true;
+        
+    } catch (Exception $e) {
+        error_log("Camera trigger error: " . $e->getMessage());
+        return false;
+    }
+}
+
 // Function to check thresholds and create alerts
 function checkBiometricAlerts($conn, $employeeId, $biometricData) {
     $alerts = [];
@@ -229,17 +277,28 @@ try {
             
             $alerts = checkBiometricAlerts($conn, $employeeId, $biometricData);
             
-            // Insert alerts
+            // Insert alerts and trigger cameras for high stress
             foreach($alerts as $alert) {
                 $insertAlert = $conn->prepare("
                     INSERT INTO tbl_biometric_alerts 
-                    (EmployeeID, AlertType, Severity, AlertMessage, BiometricData)
-                    VALUES (?, ?, ?, ?, ?)
+                    (EmployeeID, AlertType, Severity, AlertMessage, BiometricData, CameraTriggered)
+                    VALUES (?, ?, ?, ?, ?, ?)
                 ");
+                
+                // Determine if camera should be triggered
+                $triggerCamera = ($alert['type'] === 'stress' && in_array($alert['severity'], ['high', 'critical']));
+                
                 $insertAlert->execute([
                     $employeeId, $alert['type'], $alert['severity'], 
-                    $alert['message'], json_encode($biometricData)
+                    $alert['message'], json_encode($biometricData), $triggerCamera ? 1 : 0
                 ]);
+                
+                $alertId = $conn->lastInsertId();
+                
+                // Auto-trigger cameras for high stress alerts
+                if ($triggerCamera) {
+                    triggerCameraMonitoring($conn, $employeeId, $alertId, $alert['severity']);
+                }
             }
             
             echo json_encode([

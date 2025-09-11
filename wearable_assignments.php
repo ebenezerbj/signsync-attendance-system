@@ -80,10 +80,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // Get current assignments
 $currentAssignments = $conn->query("
-    SELECT ew.*, e.FullName, e.Department, d.DeviceName, d.Identifier, d.Manufacturer, d.Model,
+    SELECT ew.*, e.FullName, dept.DepartmentName as Department, d.DeviceName, d.Identifier, d.Manufacturer, d.Model,
            DATE(ew.AssignedDate) as AssignedDate
     FROM tbl_employee_wearables ew
     JOIN tbl_employees e ON ew.EmployeeID = e.EmployeeID
+    LEFT JOIN tbl_departments dept ON e.DepartmentID = dept.DepartmentID
     JOIN tbl_devices d ON ew.DeviceID = d.DeviceID
     WHERE ew.IsActive = 1
     ORDER BY ew.AssignedDate DESC
@@ -91,8 +92,9 @@ $currentAssignments = $conn->query("
 
 // Get available employees (those without active wearable assignments)
 $availableEmployees = $conn->query("
-    SELECT e.EmployeeID, e.FullName, e.Department, e.BranchID
+    SELECT e.EmployeeID, e.FullName, dept.DepartmentName as Department, e.BranchID
     FROM tbl_employees e
+    LEFT JOIN tbl_departments dept ON e.DepartmentID = dept.DepartmentID
     LEFT JOIN tbl_employee_wearables ew ON e.EmployeeID = ew.EmployeeID AND ew.IsActive = 1
     WHERE ew.EmployeeID IS NULL
     ORDER BY e.FullName
@@ -109,9 +111,10 @@ $availableDevices = $conn->query("
 
 // Get all employees for reassignment
 $allEmployees = $conn->query("
-    SELECT EmployeeID, FullName, Department 
-    FROM tbl_employees 
-    ORDER BY FullName
+    SELECT e.EmployeeID, e.FullName, dept.DepartmentName as Department 
+    FROM tbl_employees e
+    LEFT JOIN tbl_departments dept ON e.DepartmentID = dept.DepartmentID
+    ORDER BY e.FullName
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 // Get assignment statistics
