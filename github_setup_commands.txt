@@ -1,0 +1,16 @@
+# GitHub Repository Setup Commands
+# After creating the repository on GitHub, run these commands:
+
+# 1. Add the remote repository (replace with your actual GitHub repository URL)
+git remote add origin https://github.com/YOUR_USERNAME/REPOSITORY_NAME.git
+
+# 2. Push the code to GitHub
+git branch -M main
+git push -u origin main
+
+# Alternative if you want to use SSH (if you have SSH keys set up):
+# git remote add origin git@github.com:YOUR_USERNAME/REPOSITORY_NAME.git
+# git push -u origin main
+
+# To verify the remote was added correctly:
+git remote -v
