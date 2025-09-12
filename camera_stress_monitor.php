@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
             INSERT INTO tbl_biometric_alerts (
                 EmployeeID, AlertType, Severity, AlertMessage, 
                 CreatedAt, IsAcknowledged, CameraTriggered
-            ) VALUES (?, 'manual_check', 'moderate', ?, NOW(), 0, 1)
+            ) VALUES (?, 'manual_check', 'medium', ?, NOW(), 0, 1)
         ");
         $stmt->execute([$employeeID, 'Manual camera check: ' . $reason]);
         $alertID = $conn->lastInsertId();
