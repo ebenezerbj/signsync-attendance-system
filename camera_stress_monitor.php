@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         // Create a manual alert
         $stmt = $conn->prepare("
             INSERT INTO tbl_biometric_alerts (
-                EmployeeID, AlertType, Severity, Message, 
+                EmployeeID, AlertType, Severity, AlertMessage, 
                 CreatedAt, IsAcknowledged, CameraTriggered
             ) VALUES (?, 'manual_check', 'moderate', ?, NOW(), 0, 1)
         ");
