@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Colors -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="light_gray">#CCCCCC</color>
+    <color name="dark_gray">#666666</color>
+    
+    <!-- SignSync Brand Colors -->
+    <color name="primary_blue">#1E88E5</color>
+    <color name="primary_dark_blue">#1565C0</color>
+    <color name="accent_green">#43A047</color>
+    
+    <!-- Health Status Colors -->
+    <color name="health_red">#FF5252</color>
+    <color name="health_orange">#FF9800</color>
+    <color name="health_yellow">#FFC107</color>
+    <color name="health_green">#4CAF50</color>
+    
+    <!-- Button Colors -->
+    <color name="button_start_bg">#43A047</color>
+    <color name="button_start_pressed">#388E3C</color>
+    <color name="button_stop_bg">#F44336</color>
+    <color name="button_stop_pressed">#D32F2F</color>
+    <color name="button_config_bg">#424242</color>
+    <color name="button_config_pressed">#303030</color>
+    
+    <!-- Notification Colors -->
+    <color name="notification_bg">#212121</color>
+    <color name="alert_red">#FF1744</color>
+</resources>

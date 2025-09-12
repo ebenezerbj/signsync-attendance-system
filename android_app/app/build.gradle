@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0"
+
+    defaultConfig {
+        applicationId "com.signsync.wearable"
+        minSdkVersion 26  // Wear OS 2.0+
+        targetSdkVersion 34
+        versionCode 1
+        versionName "1.0.0"
+        
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "API_BASE_URL", "\"https://your-domain.com/attendance_register/\""
+            buildConfigField "String", "API_ENDPOINT", "\"wearos_api.php\""
+        }
+        debug {
+            debuggable true
+            buildConfigField "String", "API_BASE_URL", "\"http://192.168.1.100/attendance_register/\""
+            buildConfigField "String", "API_ENDPOINT", "\"wearos_api.php\""
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
+    // Wear OS Core Libraries
+    implementation 'androidx.wear:wear:1.3.0'
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'androidx.activity:activity:1.8.2'
+    implementation 'androidx.fragment:fragment:1.6.2'
+    
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-wearable:18.1.0'
+    implementation 'com.google.android.gms:play-services-fitness:21.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-tasks:18.0.2'
+    
+    // Health and Sensors
+    implementation 'androidx.health:health-services-client:1.0.0-beta03'
+    implementation 'androidx.concurrent:concurrent-futures:1.1.0'
+    
+    // Network and JSON
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    
+    // UI Components
+    implementation 'androidx.wear:wear-input:1.1.0'
+    implementation 'androidx.wear:wear-ongoing:1.0.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    
+    // Background Processing
+    implementation 'androidx.work:work-runtime:2.9.0'
+    implementation 'androidx.lifecycle:lifecycle-service:2.7.0'
+    
+    // Security and Storage
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    implementation 'androidx.preference:preference:1.2.1'
+    
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    
+    // Provided by Wear OS
+    compileOnly 'com.google.android.wearable:wearable:2.9.0'
+}
