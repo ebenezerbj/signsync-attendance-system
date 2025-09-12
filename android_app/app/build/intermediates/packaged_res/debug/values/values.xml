@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent_green">#43A047</color>
+    <color name="alert_red">#FF1744</color>
+    <color name="black">#FF000000</color>
+    <color name="button_config_bg">#424242</color>
+    <color name="button_config_pressed">#303030</color>
+    <color name="button_start_bg">#43A047</color>
+    <color name="button_start_pressed">#388E3C</color>
+    <color name="button_stop_bg">#F44336</color>
+    <color name="button_stop_pressed">#D32F2F</color>
+    <color name="dark_gray">#FF333333</color>
+    <color name="health_green">#4CAF50</color>
+    <color name="health_orange">#FFFF9500</color>
+    <color name="health_red">#FFFF3B30</color>
+    <color name="health_yellow">#FFC107</color>
+    <color name="light_gray">#FFCCCCCC</color>
+    <color name="notification_bg">#212121</color>
+    <color name="primary_blue">#1E88E5</color>
+    <color name="primary_dark_blue">#1565C0</color>
+    <color name="white">#FFFFFFFF</color>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent_blue</item>
+        <item name="android:windowBackground">@color/background_color</item>
+    </style>
+    <style name="ButtonBase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+    <style name="ButtonConfig" parent="ButtonBase">
+        <item name="android:background">@drawable/button_config</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+    <style name="ButtonReset" parent="ButtonBase">
+        <item name="android:background">@drawable/button_reset</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="ButtonSave" parent="ButtonBase">
+        <item name="android:background">@drawable/button_save</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="ButtonStart" parent="ButtonBase">
+        <item name="android:background">@drawable/button_start</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="ButtonStop" parent="ButtonBase">
+        <item name="android:background">@drawable/button_stop</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="ButtonTest" parent="ButtonBase">
+        <item name="android:background">@drawable/button_test</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="ConfigSection">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginVertical">8dp</item>
+    </style>
+    <style name="ConfigTheme" parent="AppTheme">
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+    </style>
+    <style name="CustomProgressBar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">8dp</item>
+        <item name="android:progressDrawable">@drawable/progress_bar</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+    </style>
+    <style name="CustomSwitch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="android:track">@drawable/switch_track</item>
+        <item name="android:layout_marginEnd">16dp</item>
+    </style>
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/divider_color</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+    </style>
+    <style name="HealthLabelText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+    <style name="HealthValueText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="InputField">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:background">@drawable/input_background</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_secondary</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">4dp</item>
+    </style>
+    <style name="LabelText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+    <style name="SectionTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+    <style name="StatusError" parent="StatusText">
+        <item name="android:background">@drawable/status_error</item>
+        <item name="android:textColor">@color/alert_red</item>
+    </style>
+    <style name="StatusInfo" parent="StatusText">
+        <item name="android:background">@drawable/status_info</item>
+        <item name="android:textColor">@color/accent_blue</item>
+    </style>
+    <style name="StatusSuccess" parent="StatusText">
+        <item name="android:background">@drawable/status_success</item>
+        <item name="android:textColor">@color/success_green</item>
+    </style>
+    <style name="StatusText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    <style name="SwitchContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginVertical">4dp</item>
+        <item name="android:paddingHorizontal">8dp</item>
+    </style>
+</resources>

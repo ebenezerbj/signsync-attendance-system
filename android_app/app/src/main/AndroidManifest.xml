@@ -3,6 +3,10 @@
 
     <!-- Required for the off-body sensor -->
     <uses-permission android:name="android.permission.LOW_LATENCY_OFFBODY_DETECT" />
+    
+    <!-- Required for network calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Declares that this app is for a watch -->
     <uses-feature android:name="android.hardware.type.watch" />
@@ -37,78 +41,4 @@
 
     </application>
 
-</manifest>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    
-    <!-- Hardware features -->
-    <uses-feature android:name="android.hardware.location" android:required="true" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-    <uses-feature android:name="android.hardware.wifi" android:required="false" />
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
-    
-    <!-- Background service permissions -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault"
-        android:name=".SignSyncApplication">
-
-        <!-- Main Wear OS Activity -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.DeviceDefault.Light">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <!-- Configuration Activity -->
-        <activity
-            android:name=".ConfigActivity"
-            android:exported="true"
-            android:label="SignSync Setup"
-            android:theme="@android:style/Theme.DeviceDefault.Light" />
-
-        <!-- Health Monitoring Service -->
-        <service
-            android:name=".HealthMonitoringService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="health" />
-
-        <!-- Data Sync Service -->
-        <service
-            android:name=".DataSyncService"
-            android:enabled="true"
-            android:exported="false" />
-
-        <!-- Boot Receiver -->
-        <receiver
-            android:name=".BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Stress Alert Receiver -->
-        <receiver
-            android:name=".StressAlertReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
-    </application>
 </manifest>
