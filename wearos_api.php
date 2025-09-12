@@ -86,6 +86,22 @@ try {
             handleOfflineDataSync($input, $response, $conn);
             break;
             
+        case 'clock_in':
+            handleClockIn($input, $response, $conn);
+            break;
+            
+        case 'clock_out':
+            handleClockOut($input, $response, $conn);
+            break;
+            
+        case 'get_attendance_status':
+            handleAttendanceStatus($input, $response, $conn);
+            break;
+            
+        case 'get_recent_attendance':
+            handleRecentAttendance($input, $response, $conn);
+            break;
+            
         default:
             throw new Exception("Unknown action: $action");
     }
@@ -491,6 +507,551 @@ function updateEmployeeActivity($employeeId, $conn) {
 function generateSessionToken($employeeId) {
     $data = $employeeId . time() . bin2hex(random_bytes(8));
     return hash('sha256', $data);
+}
+
+/**
+ * Handle clock in action from WearOS device
+ */
+function handleClockIn($input, &$response, $conn) {
+    try {
+        // Validate required parameters
+        if (!isset($input['employee_id'])) {
+            throw new Exception('Employee ID is required for clock in');
+        }
+        
+        $employeeId = $input['employee_id'];
+        $timestamp = isset($input['timestamp']) ? $input['timestamp'] : time();
+        $locationLat = isset($input['location_lat']) ? $input['location_lat'] : null;
+        $locationLng = isset($input['location_lng']) ? $input['location_lng'] : null;
+        $deviceInfo = isset($input['device_info']) ? $input['device_info'] : 'WearOS Device';
+        
+        // Check if employee exists
+        $stmt = $conn->prepare("SELECT * FROM tbl_employees WHERE EmployeeID = ?");
+        $stmt->execute([$employeeId]);
+        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$employee) {
+            throw new Exception('Employee not found');
+        }
+        
+        // Check if already clocked in today
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        
+        $stmt = $conn->prepare("
+            SELECT * FROM clockinout 
+            WHERE EmployeeID = ? AND ClockIn BETWEEN ? AND ? AND ClockOut IS NULL
+        ");
+        $stmt->execute([$employeeId, $todayStart, $todayEnd]);
+        $existingClockIn = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($existingClockIn) {
+            throw new Exception('Employee already clocked in today');
+        }
+        
+        // Insert clock in record
+        $clockInTime = date('Y-m-d H:i:s', $timestamp);
+        $stmt = $conn->prepare("
+            INSERT INTO clockinout (EmployeeID, ClockIn, ClockInSource, ClockInLocation, ClockInDevice)
+            VALUES (?, ?, 'WearOS', ?, ?)
+        ");
+        
+        $location = null;
+        if ($locationLat && $locationLng) {
+            $location = "$locationLat,$locationLng";
+        }
+        
+        $stmt->execute([$employeeId, $clockInTime, $location, $deviceInfo]);
+        $clockInId = $conn->lastInsertId();
+        
+        // Log the activity
+        logWearOSActivity("Clock in successful: Employee $employeeId at $clockInTime");
+        
+        $response['success'] = true;
+        $response['message'] = 'Clock in successful';
+        $response['data'] = [
+            'clock_in_id' => $clockInId,
+            'employee_id' => $employeeId,
+            'clock_in_time' => $clockInTime,
+            'employee_name' => $employee['FullName']
+        ];
+        
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        logWearOSActivity("Clock in error: " . $e->getMessage(), 'ERROR');
+    }
+}
+
+/**
+ * Handle clock out action from WearOS device
+ */
+function handleClockOut($input, &$response, $conn) {
+    try {
+        // Validate required parameters
+        if (!isset($input['employee_id'])) {
+            throw new Exception('Employee ID is required for clock out');
+        }
+        
+        $employeeId = $input['employee_id'];
+        $timestamp = isset($input['timestamp']) ? $input['timestamp'] : time();
+        $locationLat = isset($input['location_lat']) ? $input['location_lat'] : null;
+        $locationLng = isset($input['location_lng']) ? $input['location_lng'] : null;
+        $deviceInfo = isset($input['device_info']) ? $input['device_info'] : 'WearOS Device';
+        
+        // Check if employee exists
+        $stmt = $conn->prepare("SELECT * FROM tbl_employees WHERE EmployeeID = ?");
+        $stmt->execute([$employeeId]);
+        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$employee) {
+            throw new Exception('Employee not found');
+        }
+        
+        // Find active clock in record for today
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        
+        $stmt = $conn->prepare("
+            SELECT * FROM clockinout 
+            WHERE EmployeeID = ? AND ClockIn BETWEEN ? AND ? AND ClockOut IS NULL
+            ORDER BY ClockIn DESC LIMIT 1
+        ");
+        $stmt->execute([$employeeId, $todayStart, $todayEnd]);
+        $clockInRecord = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$clockInRecord) {
+            throw new Exception('No active clock in found for today');
+        }
+        
+        // Update clock out
+        $clockOutTime = date('Y-m-d H:i:s', $timestamp);
+        $location = null;
+        if ($locationLat && $locationLng) {
+            $location = "$locationLat,$locationLng";
+        }
+        
+        // Calculate work duration
+        $clockInTimestamp = strtotime($clockInRecord['ClockIn']);
+        $workDurationSeconds = $timestamp - $clockInTimestamp;
+        $workDurationHours = round($workDurationSeconds / 3600, 2);
+        
+        $stmt = $conn->prepare("
+            UPDATE clockinout 
+            SET ClockOut = ?, ClockOutSource = 'WearOS', ClockOutLocation = ?, 
+                ClockOutDevice = ?, WorkDuration = ?
+            WHERE ID = ?
+        ");
+        
+        $stmt->execute([
+            $clockOutTime, 
+            $location, 
+            $deviceInfo, 
+            $workDurationHours,
+            $clockInRecord['ID']
+        ]);
+        
+        // Log the activity
+        logWearOSActivity("Clock out successful: Employee $employeeId at $clockOutTime, Duration: {$workDurationHours}h");
+        
+        $response['success'] = true;
+        $response['message'] = 'Clock out successful';
+        $response['data'] = [
+            'clock_out_id' => $clockInRecord['ID'],
+            'employee_id' => $employeeId,
+            'clock_in_time' => $clockInRecord['ClockIn'],
+            'clock_out_time' => $clockOutTime,
+            'work_duration_hours' => $workDurationHours,
+            'employee_name' => $employee['FullName']
+        ];
+        
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        logWearOSActivity("Clock out error: " . $e->getMessage(), 'ERROR');
+    }
+}
+
+/**
+ * Get current attendance status for employee
+ */
+function handleAttendanceStatus($input, &$response, $conn) {
+    try {
+        if (!isset($input['employee_id'])) {
+            throw new Exception('Employee ID is required');
+        }
+        
+        $employeeId = $input['employee_id'];
+        
+        // Check if employee exists
+        $stmt = $conn->prepare("SELECT * FROM tbl_employees WHERE EmployeeID = ?");
+        $stmt->execute([$employeeId]);
+        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$employee) {
+            throw new Exception('Employee not found');
+        }
+        
+        // Get today's attendance status
+        $todayStart = date('Y-m-d 00:00:00');
+        $todayEnd = date('Y-m-d 23:59:59');
+        
+        $stmt = $conn->prepare("
+            SELECT * FROM clockinout 
+            WHERE EmployeeID = ? AND ClockIn BETWEEN ? AND ?
+            ORDER BY ClockIn DESC LIMIT 1
+        ");
+        $stmt->execute([$employeeId, $todayStart, $todayEnd]);
+        $todayAttendance = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        $status = 'not_clocked_in';
+        $statusMessage = 'Not clocked in today';
+        $clockInTime = null;
+        $clockOutTime = null;
+        $workDuration = null;
+        
+        if ($todayAttendance) {
+            if ($todayAttendance['ClockOut']) {
+                $status = 'clocked_out';
+                $statusMessage = 'Clocked out for today';
+                $clockOutTime = $todayAttendance['ClockOut'];
+                $workDuration = $todayAttendance['WorkDuration'];
+            } else {
+                $status = 'clocked_in';
+                $statusMessage = 'Currently clocked in';
+            }
+            $clockInTime = $todayAttendance['ClockIn'];
+        }
+        
+        $response['success'] = true;
+        $response['message'] = $statusMessage;
+        $response['data'] = [
+            'employee_id' => $employeeId,
+            'employee_name' => $employee['FullName'],
+            'status' => $status,
+            'clock_in_time' => $clockInTime,
+            'clock_out_time' => $clockOutTime,
+            'work_duration_hours' => $workDuration,
+            'date' => date('Y-m-d')
+        ];
+        
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        logWearOSActivity("Attendance status error: " . $e->getMessage(), 'ERROR');
+    }
+}
+
+/**
+ * Get recent attendance history for employee
+ */
+function handleRecentAttendance($input, &$response, $conn) {
+    try {
+        if (!isset($input['employee_id'])) {
+            throw new Exception('Employee ID is required');
+        }
+        
+        $employeeId = $input['employee_id'];
+        $limit = isset($input['limit']) ? max(1, min(100, intval($input['limit']))) : 7; // Default 7 days, max 100
+        
+        // Check if employee exists
+        $stmt = $conn->prepare("SELECT * FROM tbl_employees WHERE EmployeeID = ?");
+        $stmt->execute([$employeeId]);
+        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$employee) {
+            throw new Exception('Employee not found');
+        }
+        
+        // Get recent attendance records
+        $stmt = $conn->prepare("
+            SELECT 
+                DATE(ClockIn) as attendance_date,
+                ClockIn as clock_in_time,
+                ClockOut as clock_out_time,
+                WorkDuration as work_duration_hours,
+                ClockInSource as clock_in_source,
+                ClockOutSource as clock_out_source
+            FROM clockinout 
+            WHERE EmployeeID = ? 
+            ORDER BY ClockIn DESC 
+            LIMIT ?
+        ");
+        $stmt->execute([$employeeId, $limit]);
+        $attendanceHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Calculate summary statistics
+        $totalWorkHours = 0;
+        $daysWorked = 0;
+        
+        foreach ($attendanceHistory as $record) {
+            if ($record['work_duration_hours']) {
+                $totalWorkHours += $record['work_duration_hours'];
+                $daysWorked++;
+            }
+        }
+        
+        $averageWorkHours = $daysWorked > 0 ? round($totalWorkHours / $daysWorked, 2) : 0;
+        
+        $response['success'] = true;
+        $response['message'] = 'Recent attendance retrieved successfully';
+        $response['data'] = [
+            'employee_id' => $employeeId,
+            'employee_name' => $employee['FullName'],
+            'attendance_history' => $attendanceHistory,
+            'summary' => [
+                'total_work_hours' => round($totalWorkHours, 2),
+                'days_worked' => $daysWorked,
+                'average_work_hours' => $averageWorkHours,
+                'period_days' => count($attendanceHistory)
+            ]
+        ];
+        
+    } catch (Exception $e) {
+        $response['success'] = false;
+        $response['message'] = $e->getMessage();
+        logWearOSActivity("Recent attendance error: " . $e->getMessage(), 'ERROR');
+    }
+}
+
+/**
+ * Verify if GPS coordinates are within workplace radius
+ */
+function verifyWorkplaceLocation($latitude, $longitude, $conn) {
+    try {
+        // Get all active workplace locations
+        $stmt = $conn->prepare("
+            SELECT center_latitude, center_longitude, radius_meters, wifi_ssids, beacon_uuids
+            FROM workplace_locations 
+            WHERE is_active = 1
+        ");
+        $stmt->execute();
+        $workplaces = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($workplaces as $workplace) {
+            $distance = calculateDistance(
+                $latitude, $longitude,
+                $workplace['center_latitude'], $workplace['center_longitude']
+            );
+            
+            // Check if within radius (convert meters to distance calculation)
+            $radiusInKm = $workplace['radius_meters'] / 1000;
+            if ($distance <= $radiusInKm) {
+                logWearOSActivity("Location verified: within {$workplace['radius_meters']}m of workplace");
+                return true;
+            }
+        }
+        
+        logWearOSActivity("Location verification failed: outside all workplace boundaries");
+        return false;
+        
+    } catch (Exception $e) {
+        logWearOSActivity("Error verifying workplace location: " . $e->getMessage(), 'ERROR');
+        return false;
+    }
+}
+
+/**
+ * Calculate distance between two GPS coordinates using Haversine formula
+ */
+function calculateDistance($lat1, $lon1, $lat2, $lon2) {
+    $earthRadius = 6371; // Earth's radius in kilometers
+    
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+    
+    $a = sin($dLat/2) * sin($dLat/2) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon/2) * sin($dLon/2);
+    $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+    
+    return $earthRadius * $c; // Distance in kilometers
+}
+
+/**
+ * Log location tracking data for continuous monitoring
+ */
+function logLocationTracking($employeeId, $deviceId, $latitude, $longitude, $accuracy, 
+                           $locationMethod, $wifiNetworks, $beaconData, $isAtWorkplace, $conn) {
+    try {
+        // Verify workplace location
+        $workplaceLocationId = null;
+        if ($isAtWorkplace) {
+            $stmt = $conn->prepare("
+                SELECT id FROM workplace_locations 
+                WHERE is_active = 1 
+                ORDER BY id ASC LIMIT 1
+            ");
+            $stmt->execute();
+            $workplace = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($workplace) {
+                $workplaceLocationId = $workplace['id'];
+            }
+        }
+        
+        // Insert location tracking record
+        $stmt = $conn->prepare("
+            INSERT INTO location_tracking (
+                employee_id, device_id, tracked_at, latitude, longitude, accuracy,
+                location_method, wifi_networks, beacon_data, is_at_workplace,
+                workplace_location_id, tracking_type
+            ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, 'automatic')
+        ");
+        
+        $stmt->execute([
+            $employeeId, $deviceId, $latitude, $longitude, $accuracy,
+            $locationMethod, $wifiNetworks, $beaconData, $isAtWorkplace,
+            $workplaceLocationId
+        ]);
+        
+        logWearOSActivity("Location tracking logged for employee: $employeeId at $latitude,$longitude");
+        
+    } catch (Exception $e) {
+        logWearOSActivity("Error logging location tracking: " . $e->getMessage(), 'ERROR');
+    }
+}
+
+/**
+ * Enhanced location verification using multiple methods
+ */
+function performLocationVerification($gpsLat, $gpsLng, $wifiNetworks, $beaconData, $conn) {
+    $score = 0;
+    $maxScore = 100;
+    $verificationMethods = [];
+    
+    try {
+        // GPS verification (40 points)
+        if ($gpsLat && $gpsLng) {
+            if (verifyWorkplaceLocation($gpsLat, $gpsLng, $conn)) {
+                $score += 40;
+                $verificationMethods[] = 'gps_verified';
+            } else {
+                $verificationMethods[] = 'gps_failed';
+            }
+        }
+        
+        // WiFi verification (35 points)
+        if ($wifiNetworks && is_array($wifiNetworks)) {
+            $wifiScore = verifyWifiNetworks($wifiNetworks, $conn);
+            $score += $wifiScore;
+            if ($wifiScore > 0) {
+                $verificationMethods[] = 'wifi_verified';
+            }
+        }
+        
+        // Beacon verification (25 points)
+        if ($beaconData && is_array($beaconData)) {
+            $beaconScore = verifyBeacons($beaconData, $conn);
+            $score += $beaconScore;
+            if ($beaconScore > 0) {
+                $verificationMethods[] = 'beacon_verified';
+            }
+        }
+        
+        $isVerified = $score >= 50; // Require at least 50% confidence
+        
+        logWearOSActivity("Location verification completed: Score $score/$maxScore, Methods: " . implode(',', $verificationMethods));
+        
+        return [
+            'verified' => $isVerified,
+            'score' => $score,
+            'max_score' => $maxScore,
+            'methods' => $verificationMethods
+        ];
+        
+    } catch (Exception $e) {
+        logWearOSActivity("Error in location verification: " . $e->getMessage(), 'ERROR');
+        return ['verified' => false, 'score' => 0, 'max_score' => $maxScore, 'methods' => ['error']];
+    }
+}
+
+/**
+ * Verify WiFi networks against authorized workplace networks
+ */
+function verifyWifiNetworks($wifiNetworks, $conn) {
+    try {
+        // Get authorized WiFi SSIDs from workplace locations
+        $stmt = $conn->prepare("
+            SELECT wifi_ssids FROM workplace_locations 
+            WHERE is_active = 1 AND wifi_ssids IS NOT NULL
+        ");
+        $stmt->execute();
+        $workplaces = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $authorizedSSIDs = [];
+        foreach ($workplaces as $workplace) {
+            $ssids = json_decode($workplace['wifi_ssids'], true);
+            if ($ssids && is_array($ssids)) {
+                $authorizedSSIDs = array_merge($authorizedSSIDs, $ssids);
+            }
+        }
+        
+        if (empty($authorizedSSIDs)) {
+            return 0; // No authorized networks configured
+        }
+        
+        // Check for matches
+        $matches = 0;
+        foreach ($wifiNetworks as $network) {
+            $ssid = isset($network['ssid']) ? $network['ssid'] : '';
+            if (in_array($ssid, $authorizedSSIDs)) {
+                $matches++;
+                logWearOSActivity("WiFi match found: $ssid");
+            }
+        }
+        
+        // Score based on percentage of authorized networks found
+        return min(35, ($matches / count($authorizedSSIDs)) * 35);
+        
+    } catch (Exception $e) {
+        logWearOSActivity("Error verifying WiFi networks: " . $e->getMessage(), 'ERROR');
+        return 0;
+    }
+}
+
+/**
+ * Verify Bluetooth LE beacons against authorized workplace beacons
+ */
+function verifyBeacons($beaconData, $conn) {
+    try {
+        // Get authorized beacon UUIDs from workplace locations
+        $stmt = $conn->prepare("
+            SELECT beacon_uuids FROM workplace_locations 
+            WHERE is_active = 1 AND beacon_uuids IS NOT NULL
+        ");
+        $stmt->execute();
+        $workplaces = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $authorizedUUIDs = [];
+        foreach ($workplaces as $workplace) {
+            $uuids = json_decode($workplace['beacon_uuids'], true);
+            if ($uuids && is_array($uuids)) {
+                $authorizedUUIDs = array_merge($authorizedUUIDs, $uuids);
+            }
+        }
+        
+        if (empty($authorizedUUIDs)) {
+            return 0; // No authorized beacons configured
+        }
+        
+        // Check for matches
+        $matches = 0;
+        foreach ($beaconData as $beacon) {
+            $uuid = isset($beacon['uuid']) ? strtoupper($beacon['uuid']) : '';
+            foreach ($authorizedUUIDs as $authorizedUUID) {
+                if (strtoupper($authorizedUUID) === $uuid) {
+                    $matches++;
+                    logWearOSActivity("Beacon match found: $uuid");
+                    break;
+                }
+            }
+        }
+        
+        // Score based on number of matches (max 25 points)
+        return min(25, $matches * 12.5); // Up to 2 beacons for full score
+        
+    } catch (Exception $e) {
+        logWearOSActivity("Error verifying beacons: " . $e->getMessage(), 'ERROR');
+        return 0;
+    }
 }
 
 ?>
