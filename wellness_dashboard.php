@@ -8,6 +8,27 @@ if (!isset($_SESSION['user_id']) || !in_array(strtolower($_SESSION['user_role'])
     exit;
 }
 
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
+    if ($_POST['action'] === 'acknowledge_alert') {
+        $alertID = $_POST['alert_id'];
+        $userID = $_SESSION['user_id'];
+        
+        $stmt = $conn->prepare("
+            UPDATE tbl_biometric_alerts 
+            SET IsAcknowledged = 1, AcknowledgedBy = ?, AcknowledgedAt = NOW()
+            WHERE AlertID = ?
+        ");
+        
+        header('Content-Type: application/json');
+        if ($stmt->execute([$userID, $alertID])) {
+            echo json_encode(['success' => true, 'message' => 'Alert acknowledged.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to acknowledge alert.']);
+        }
+        exit;
+    }
+}
+
 // Get current date and time info
 $today = date('Y-m-d');
 $currentWeek = date('Y-\WW');
@@ -391,6 +412,18 @@ $employees = $conn->query("
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    function acknowledgeAlert(alertId) {
+        if (confirm('Are you sure you want to acknowledge this alert?')) {
+            $.post(window.location.href, { action: 'acknowledge_alert', alert_id: alertId }, function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to acknowledge alert: ' + response.message);
+                }
+            }, 'json');
+        }
+    }
+
     // Initialize charts
     let stressChart, fatigueChart;
 
