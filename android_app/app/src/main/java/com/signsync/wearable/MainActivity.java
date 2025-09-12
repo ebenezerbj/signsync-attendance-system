@@ -29,22 +29,22 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "SignSyncWearable";
     private static final int PERMISSION_REQUEST_CODE = 100;
-    
+
     // Required permissions for health monitoring and location
     private static final String[] REQUIRED_PERMISSIONS = {
-        Manifest.permission.BODY_SENSORS,
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.INTERNET,
-        Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.WAKE_LOCK,
-        Manifest.permission.FOREGROUND_SERVICE,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_WIFI_STATE,
-        Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT
+            Manifest.permission.BODY_SENSORS,
+            Manifest.permission.ACTIVITY_RECOGNITION,
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WAKE_LOCK,
+            Manifest.permission.FOREGROUND_SERVICE,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT
     };
 
     // UI Components
@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
     // Service binding
     private HealthMonitoringService healthService;
     private boolean isServiceBound = false;
-    
+
     // Shared preferences for configuration
     private SharedPreferences sharedPrefs;
-    
+
     // Update handler
     private Handler uiUpdateHandler;
     private Runnable uiUpdateRunnable;
@@ -77,17 +77,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "MainActivity onCreate");
-        
+
         // Initialize UI components
         initializeViews();
-        
+
         // Initialize shared preferences
         sharedPrefs = getSharedPreferences("SignSyncConfig", Context.MODE_PRIVATE);
-        
+
         // Initialize update handler
         uiUpdateHandler = new Handler(Looper.getMainLooper());
         setupUIUpdateRunnable();
-        
+
         // Check and request permissions
         if (checkPermissions()) {
             initializeServices();
@@ -135,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkPermissions() {
         for (String permission : REQUIRED_PERMISSIONS) {
-            if (ContextCompat.checkSelfPermission(this, permission) 
-                != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -148,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, 
-                                         @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
+
         if (requestCode == PERMISSION_REQUEST_CODE) {
             boolean allPermissionsGranted = true;
             for (int result : grantResults) {
@@ -166,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 initializeServices();
             } else {
                 Log.e(TAG, "Some permissions denied");
-                Toast.makeText(this, "Health monitoring requires all permissions", 
-                             Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Health monitoring requires all permissions",
+                        Toast.LENGTH_LONG).show();
                 statusText.setText("Permissions required for health monitoring");
             }
         }
@@ -175,11 +175,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeServices() {
         Log.d(TAG, "Initializing services");
-        
+
         // Bind to health monitoring service
         Intent serviceIntent = new Intent(this, HealthMonitoringService.class);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        
+
         // Start data sync service
         Intent syncServiceIntent = new Intent(this, DataSyncService.class);
         startService(syncServiceIntent); // Use startService for DataSyncService
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         // Start watch removal service
         Intent watchRemovalIntent = new Intent(this, WatchRemovalService.class);
         startService(watchRemovalIntent);
-        
+
         statusText.setText("Services initializing...");
     }
 
@@ -195,14 +195,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(TAG, "Health monitoring service connected");
-            HealthMonitoringService.LocalBinder binder = 
-                (HealthMonitoringService.LocalBinder) service;
+            HealthMonitoringService.LocalBinder binder =
+                    (HealthMonitoringService.LocalBinder) service;
             healthService = binder.getService();
             isServiceBound = true;
-            
+
             // Start UI updates
             uiUpdateHandler.post(uiUpdateRunnable);
-            
+
             runOnUiThread(() -> {
                 statusText.setText("Services connected");
                 updateUIState(healthService.isMonitoring());
@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Health monitoring service disconnected");
             healthService = null;
             isServiceBound = false;
-            
+
             runOnUiThread(() -> {
                 statusText.setText("Service disconnected");
                 updateUIState(false);
@@ -225,20 +225,20 @@ public class MainActivity extends AppCompatActivity {
     private void startHealthMonitoring() {
         if (isServiceBound && healthService != null) {
             Log.d(TAG, "Starting health monitoring");
-            
+
             // Get employee ID from shared preferences
             String employeeId = sharedPrefs.getString("employee_id", "");
             if (employeeId.isEmpty()) {
-                Toast.makeText(this, "Please configure employee ID first", 
-                             Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please configure employee ID first",
+                        Toast.LENGTH_SHORT).show();
                 openConfiguration();
                 return;
             }
-            
+
             healthService.startMonitoring(employeeId);
             updateUIState(true);
             statusText.setText("Health monitoring started");
-            
+
             Toast.makeText(this, "Health monitoring started", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Service not available", Toast.LENGTH_SHORT).show();
@@ -251,11 +251,11 @@ public class MainActivity extends AppCompatActivity {
             healthService.stopMonitoring();
             updateUIState(false);
             statusText.setText("Health monitoring stopped");
-            
+
             // Clear health data display
             heartRateText.setText("Heart Rate: --");
             stressLevelText.setText("Stress Level: --");
-            
+
             Toast.makeText(this, "Health monitoring stopped", Toast.LENGTH_SHORT).show();
         }
     }
@@ -281,9 +281,9 @@ public class MainActivity extends AppCompatActivity {
             if (latestData != null) {
                 runOnUiThread(() -> {
                     heartRateText.setText("Heart Rate: " + latestData.getHeartRate() + " bpm");
-                    stressLevelText.setText("Stress Level: " + 
-                        String.format("%.1f", latestData.getStressLevel()));
-                    
+                    stressLevelText.setText("Stress Level: " +
+                            String.format("%.1f", latestData.getStressLevel()));
+
                     // Update connection status
                     boolean isOnline = healthService.isConnectedToServer();
                     connectionStatusText.setText("Server: " + (isOnline ? "Connected" : "Offline"));
@@ -296,15 +296,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "MainActivity onResume");
-        
+
         // Restart UI updates if service is bound
         if (isServiceBound) {
             uiUpdateHandler.post(uiUpdateRunnable);
         }
-        
+
         // Update attendance status when app resumes
         updateAttendanceStatus();
-        
+
         // Start location service if not already running
         LocationService.startLocationService(this);
     }
@@ -316,52 +316,52 @@ public class MainActivity extends AppCompatActivity {
         //     // For now, we'll create a temporary instance to get location data
         //     Intent serviceIntent = new Intent(this, LocationService.class);
         //     startService(serviceIntent);
-            
+
         //     // In a real implementation, you'd bind to the service and get data
         //     // For now, return a basic location data structure
         //     LocationService.LocationData locationData = new LocationService.LocationData();
-            
+
         //     // Try to get last known location if available
-        //     android.location.LocationManager locationManager = 
+        //     android.location.LocationManager locationManager =
         //         (android.location.LocationManager) getSystemService(LOCATION_SERVICE);
-            
-        //     if (ActivityCompat.checkSelfPermission(this, 
+
+        //     if (ActivityCompat.checkSelfPermission(this,
         //             android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                
-        //         android.location.Location lastKnownLocation = 
+
+        //         android.location.Location lastKnownLocation =
         //             locationManager.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
-                
+
         //         if (lastKnownLocation == null) {
         //             lastKnownLocation = locationManager.getLastKnownLocation(
         //                 android.location.LocationManager.NETWORK_PROVIDER);
         //         }
-                
+
         //         if (lastKnownLocation != null) {
         //             locationData.latitude = lastKnownLocation.getLatitude();
         //             locationData.longitude = lastKnownLocation.getLongitude();
         //             locationData.accuracy = lastKnownLocation.getAccuracy();
         //             locationData.locationMethod = "gps";
-                    
+
         //             // Check if at workplace (basic distance check)
         //             float workplaceLat = sharedPrefs.getFloat("workplace_lat", 0.0f);
         //             float workplaceLng = sharedPrefs.getFloat("workplace_lng", 0.0f);
-                    
+
         //             if (workplaceLat != 0.0f && workplaceLng != 0.0f) {
         //                 android.location.Location workplaceLocation = new android.location.Location("workplace");
         //                 workplaceLocation.setLatitude(workplaceLat);
         //                 workplaceLocation.setLongitude(workplaceLng);
-                        
+
         //                 float distance = lastKnownLocation.distanceTo(workplaceLocation);
         //                 locationData.isAtWorkplace = distance <= 100.0f; // 100 meter radius
         //             }
         //         }
         //     }
-            
+
         //     return locationData;
-            
+
         // } catch (Exception e) {
         //     Log.e(TAG, "Error getting location data", e);
-             return null;
+        return null;
         // }
     }
 
@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "MainActivity onPause");
-        
+
         // Stop UI updates to save battery
         uiUpdateHandler.removeCallbacks(uiUpdateRunnable);
     }
@@ -378,15 +378,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "MainActivity onDestroy");
-        
+
         // Cleanup
         uiUpdateHandler.removeCallbacks(uiUpdateRunnable);
-        
+
         if (isServiceBound) {
             unbindService(serviceConnection);
             isServiceBound = false;
         }
-        
+
     }
 
     // Clock In functionality
@@ -406,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
                 ApiClient apiClient = new ApiClient(this);
                 // Get comprehensive location data
                 LocationService.LocationData locationData = getLocationData();
-                
+
                 org.json.JSONObject request = new org.json.JSONObject();
                 request.put("action", "clock_in");
                 request.put("employee_id", employeeId);
@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
                     request.put("location_accuracy", locationData.accuracy);
                     request.put("location_method", locationData.locationMethod);
                     request.put("is_at_workplace", locationData.isAtWorkplace);
-                    
+
                     // Add WiFi networks information
                     org.json.JSONArray wifiNetworks = new org.json.JSONArray();
                     for (LocationService.WifiNetworkInfo wifi : locationData.wifiNetworks) {
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                         wifiNetworks.put(wifiObj);
                     }
                     request.put("wifi_networks", wifiNetworks);
-                    
+
                     // Add beacon information
                     org.json.JSONArray beacons = new org.json.JSONArray();
                     for (LocationService.BeaconInfo beacon : locationData.beacons) {
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 String response = apiClient.sendRequest(request.toString());
-                
+
                 runOnUiThread(() -> {
                     try {
                         if (response != null && !response.isEmpty()) {
@@ -508,10 +508,10 @@ public class MainActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 ApiClient apiClient = new ApiClient(this);
-                
+
                 // Get comprehensive location data
                 LocationService.LocationData locationData = getLocationData();
-                
+
                 org.json.JSONObject request = new org.json.JSONObject();
                 request.put("action", "clock_out");
                 request.put("employee_id", employeeId);
@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
                     request.put("location_accuracy", locationData.accuracy);
                     request.put("location_method", locationData.locationMethod);
                     request.put("is_at_workplace", locationData.isAtWorkplace);
-                    
+
                     // Add WiFi networks information
                     org.json.JSONArray wifiNetworks = new org.json.JSONArray();
                     for (LocationService.WifiNetworkInfo wifi : locationData.wifiNetworks) {
@@ -537,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
                         wifiNetworks.put(wifiObj);
                     }
                     request.put("wifi_networks", wifiNetworks);
-                    
+
                     // Add beacon information
                     org.json.JSONArray beacons = new org.json.JSONArray();
                     for (LocationService.BeaconInfo beacon : locationData.beacons) {
@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 String response = apiClient.sendRequest(request.toString());
-                
+
                 runOnUiThread(() -> {
                     try {
                         if (response != null && !response.isEmpty()) {
@@ -569,10 +569,10 @@ public class MainActivity extends AppCompatActivity {
                             if (success) {
                                 org.json.JSONObject data = responseObj.optJSONObject("data");
                                 double workHours = data != null ? data.optDouble("work_duration_hours", 0) : 0;
-                                
-                                Toast.makeText(this, "Clock out successful! Worked: " + 
-                                    String.format("%.1f hours", workHours), Toast.LENGTH_LONG).show();
-                                
+
+                                Toast.makeText(this, "Clock out successful! Worked: " +
+                                        String.format("%.1f hours", workHours), Toast.LENGTH_LONG).show();
+
                                 clockInButton.setEnabled(true);
                                 clockOutButton.setEnabled(false);
                                 updateAttendanceStatus();
@@ -620,7 +620,7 @@ public class MainActivity extends AppCompatActivity {
                 request.put("employee_id", employeeId);
 
                 String response = apiClient.sendRequest(request.toString());
-                
+
                 runOnUiThread(() -> {
                     try {
                         if (response != null && !response.isEmpty()) {
