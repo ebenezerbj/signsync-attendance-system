@@ -3,21 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/black"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="#FF000000">
 
-    <!-- App Title -->
     <TextView
-        android:id="@+id/app_title"
+        android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SignSync Health"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"
-        android:gravity="center" />
+        android:text="Initializing..."
+        android:textColor="#FFFFFFFF"
+        android:textSize="16sp" />
+
+</LinearLayout>
 
     <!-- Status Text -->
     <TextView

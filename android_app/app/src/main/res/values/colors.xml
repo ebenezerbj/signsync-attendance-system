@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base Colors -->
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-    <color name="light_gray">#CCCCCC</color>
-    <color name="dark_gray">#666666</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_gray">#FFCCCCCC</color>
+    <color name="dark_gray">#FF333333</color>
     
     <!-- SignSync Brand Colors -->
     <color name="primary_blue">#1E88E5</color>
@@ -12,8 +12,8 @@
     <color name="accent_green">#43A047</color>
     
     <!-- Health Status Colors -->
-    <color name="health_red">#FF5252</color>
-    <color name="health_orange">#FF9800</color>
+    <color name="health_red">#FFFF3B30</color>
+    <color name="health_orange">#FFFF9500</color>
     <color name="health_yellow">#FFC107</color>
     <color name="health_green">#4CAF50</color>
     

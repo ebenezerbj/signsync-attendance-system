@@ -7,47 +7,77 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.json.JSONObject;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import androidx.annotation.Nullable;
 
 public class WatchRemovalService extends Service implements SensorEventListener {
 
     private static final String TAG = "WatchRemovalService";
     private SensorManager sensorManager;
     private Sensor offBodySensor;
-    private ExecutorService executorService;
-    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "WatchRemovalService CREATED.");
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         offBodySensor = sensorManager.getDefaultSensor(Sensor.TYPE_LOW_LATENCY_OFFBODY_DETECT);
-        executorService = Executors.newSingleThreadExecutor();
 
         if (offBodySensor == null) {
-            Log.w(TAG, "Low latency off-body sensor not available.");
-            // Fallback or alternative method could be implemented here
-            stopSelf();
+            Log.e(TAG, "Off-body sensor not available on this device.");
+            stopSelf(); // Stop the service if the sensor is not available
         }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Watch Removal Service started.");
+        Log.d(TAG, "WatchRemovalService STARTED.");
         if (offBodySensor != null) {
             sensorManager.registerListener(this, offBodySensor, SensorManager.SENSOR_DELAY_NORMAL);
+            Log.d(TAG, "Off-body sensor listener registered.");
+        }
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (sensorManager != null && offBodySensor != null) {
+            sensorManager.unregisterListener(this);
+            Log.d(TAG, "Off-body sensor listener unregistered.");
+        }
+        Log.d(TAG, "WatchRemovalService DESTROYED.");
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_LOW_LATENCY_OFFBODY_DETECT) {
+            // The value is 0.0f if the device is on-body, and 1.0f if it's off-body.
+            boolean isOffBody = event.values[0] == 1.0f;
+            if (isOffBody) {
+                Log.w(TAG, "DEVICE IS OFF-BODY (Watch Removed)");
+                // TODO: Add network call to send 'watch_removed' to the backend API.
+            } else {
+                Log.i(TAG, "DEVICE IS ON-BODY (Watch Re-applied)");
+                // TODO: Add network call to send 'watch_reapplied' to the backend API.
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Can be ignored for the off-body sensor.
+        Log.d(TAG, "Sensor accuracy changed: " + accuracy);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+}
         }
         return START_STICKY;
     }
