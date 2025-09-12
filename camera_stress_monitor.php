@@ -367,7 +367,7 @@ $cameraStats = $conn->query("
                                             <span class="stress-indicator stress-<?= $alert['Severity'] ?>"></span>
                                             <?= htmlspecialchars($alert['FullName']) ?>
                                         </h6>
-                                        <p class="mb-1 small text-muted"><?= htmlspecialchars($alert['Message']) ?></p>
+                                        <p class="mb-1 small text-muted"><?= htmlspecialchars($alert['Message'] ?? 'No message available') ?></p>
                                         <small class="text-muted">
                                             <i class="bi bi-clock"></i> <?= date('M j, H:i', strtotime($alert['CreatedAt'])) ?>
                                             | <i class="bi bi-camera"></i> <?= $alert['available_cameras'] ?> cameras
