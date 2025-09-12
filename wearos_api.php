@@ -102,6 +102,14 @@ try {
             handleRecentAttendance($input, $response, $conn);
             break;
             
+        case 'watch_removed':
+            handleWatchRemoved($input, $response, $conn);
+            break;
+            
+        case 'watch_reapplied':
+            handleWatchReapplied($input, $response, $conn);
+            break;
+            
         default:
             throw new Exception("Unknown action: $action");
     }
@@ -1054,4 +1062,83 @@ function verifyBeacons($beaconData, $conn) {
     }
 }
 
-?>
+/**
+ * Handles the event when a watch is removed.
+ * Logs the start of a removal event.
+ */
+function handleWatchRemoved($input, &$response, $conn) {
+    $employeeId = $input['employee_id'] ?? null;
+    $deviceId = $input['device_id'] ?? null;
+
+    if (!$employeeId || !$deviceId) {
+        throw new Exception("Employee ID and Device ID are required for watch removal event.");
+    }
+
+    $stmt = $conn->prepare("
+        INSERT INTO watch_removal_log (employee_id, device_id, removed_at, status)
+        VALUES (?, ?, NOW(), 'removed')
+    ");
+    
+    if ($stmt->execute([$employeeId, $deviceId])) {
+        $response['success'] = true;
+        $response['message'] = 'Watch removal event logged successfully.';
+        $response['log_id'] = $conn->lastInsertId();
+    } else {
+        throw new Exception("Failed to log watch removal event.");
+    }
+}
+
+/**
+ * Handles the event when a watch is reapplied.
+ * Updates the removal log with the reapplication time and duration.
+ */
+function handleWatchReapplied($input, &$response, $conn) {
+    $employeeId = $input['employee_id'] ?? null;
+    $deviceId = $input['device_id'] ?? null;
+
+    if (!$employeeId || !$deviceId) {
+        throw new Exception("Employee ID and Device ID are required for watch reapplication event.");
+    }
+
+    // Find the last 'removed' event for this employee and device
+    $findStmt = $conn->prepare("
+        SELECT id, removed_at FROM watch_removal_log
+        WHERE employee_id = ? AND device_id = ? AND status = 'removed'
+        ORDER BY removed_at DESC
+        LIMIT 1
+    ");
+    $findStmt->execute([$employeeId, $deviceId]);
+    $lastRemoval = $findStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($lastRemoval) {
+        $logId = $lastRemoval['id'];
+        $removedAt = new DateTime($lastRemoval['removed_at']);
+        $reappliedAt = new DateTime();
+        $duration = $reappliedAt->getTimestamp() - $removedAt->getTimestamp();
+
+        $updateStmt = $conn->prepare("
+            UPDATE watch_removal_log
+            SET reapplied_at = ?, status = 'reapplied', duration_seconds = ?
+            WHERE id = ?
+        ");
+
+        if ($updateStmt->execute([$reappliedAt->format('Y-m-d H:i:s'), $duration, $logId])) {
+            $response['success'] = true;
+            $response['message'] = 'Watch reapplication event logged successfully.';
+            $response['duration_seconds'] = $duration;
+        } else {
+            throw new Exception("Failed to update watch reapplication event.");
+        }
+    } else {
+        // This could happen if a 'reapplied' event is received without a prior 'removed' event
+        // For now, we'll just log it as a new, albeit incomplete, record.
+        $stmt = $conn->prepare("
+            INSERT INTO watch_removal_log (employee_id, device_id, reapplied_at, status)
+            VALUES (?, ?, NOW(), 'reapplied_without_removal')
+        ");
+        $stmt->execute([$employeeId, $deviceId]);
+        
+        $response['success'] = true;
+        $response['message'] = 'Watch reapplication event logged, but no prior removal was found.';
+    }
+}

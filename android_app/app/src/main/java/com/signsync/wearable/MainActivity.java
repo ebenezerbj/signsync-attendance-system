@@ -4,7 +4,21 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.Ser    private void initializeServices() {
+        Log.d(TAG, "Initializing services");
+        
+        // Bind to health monitoring service
+        Intent serviceIntent = new Intent(this, HealthMonitoringService.class);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        
+        // Start data sync service
+        Intent syncServiceIntent = new Intent(this, DataSyncService.class);
+        startForegroundService(syncServiceIntent);
+
+        // Start watch removal service
+        Intent watchRemovalIntent = new Intent(this, WatchRemovalService.class);
+        startService(watchRemovalIntent);
+    }ion;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
