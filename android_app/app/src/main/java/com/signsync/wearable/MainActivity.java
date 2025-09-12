@@ -4,21 +4,7 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.Ser    private void initializeServices() {
-        Log.d(TAG, "Initializing services");
-        
-        // Bind to health monitoring service
-        Intent serviceIntent = new Intent(this, HealthMonitoringService.class);
-        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        
-        // Start data sync service
-        Intent syncServiceIntent = new Intent(this, DataSyncService.class);
-        startForegroundService(syncServiceIntent);
-
-        // Start watch removal service
-        Intent watchRemovalIntent = new Intent(this, WatchRemovalService.class);
-        startService(watchRemovalIntent);
-    }ion;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,20 +21,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.wear.ambient.AmbientModeSupport;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.wearable.MessageApi;
-import com.google.android.gms.wearable.MessageEvent;
-import com.google.android.gms.wearable.Node;
-import com.google.android.gms.wearable.Wearable;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements 
-    AmbientModeSupport.AmbientCallbackProvider,
-    MessageApi.MessageListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "SignSyncWearable";
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -87,9 +64,6 @@ public class MainActivity extends AppCompatActivity implements
     private HealthMonitoringService healthService;
     private boolean isServiceBound = false;
     
-    // Ambient mode support
-    private AmbientModeSupport.AmbientController ambientController;
-    
     // Shared preferences for configuration
     private SharedPreferences sharedPrefs;
     
@@ -103,9 +77,6 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "MainActivity onCreate");
-        
-        // Initialize ambient mode support
-        ambientController = AmbientModeSupport.attach(this);
         
         // Initialize UI components
         initializeViews();
@@ -211,10 +182,11 @@ public class MainActivity extends AppCompatActivity implements
         
         // Start data sync service
         Intent syncServiceIntent = new Intent(this, DataSyncService.class);
-        startForegroundService(syncServiceIntent);
-        
-        // Initialize Wearable API
-        Wearable.getMessageApi(getGoogleApiClient()).addListener(this);
+        startService(syncServiceIntent); // Use startService for DataSyncService
+
+        // Start watch removal service
+        Intent watchRemovalIntent = new Intent(this, WatchRemovalService.class);
+        startService(watchRemovalIntent);
         
         statusText.setText("Services initializing...");
     }
@@ -339,58 +311,58 @@ public class MainActivity extends AppCompatActivity implements
 
     // Get current location data from LocationService
     private LocationService.LocationData getLocationData() {
-        try {
-            // This would ideally be done through service binding
-            // For now, we'll create a temporary instance to get location data
-            Intent serviceIntent = new Intent(this, LocationService.class);
-            startService(serviceIntent);
+        // try {
+        //     // This would ideally be done through service binding
+        //     // For now, we'll create a temporary instance to get location data
+        //     Intent serviceIntent = new Intent(this, LocationService.class);
+        //     startService(serviceIntent);
             
-            // In a real implementation, you'd bind to the service and get data
-            // For now, return a basic location data structure
-            LocationService.LocationData locationData = new LocationService.LocationData();
+        //     // In a real implementation, you'd bind to the service and get data
+        //     // For now, return a basic location data structure
+        //     LocationService.LocationData locationData = new LocationService.LocationData();
             
-            // Try to get last known location if available
-            android.location.LocationManager locationManager = 
-                (android.location.LocationManager) getSystemService(LOCATION_SERVICE);
+        //     // Try to get last known location if available
+        //     android.location.LocationManager locationManager = 
+        //         (android.location.LocationManager) getSystemService(LOCATION_SERVICE);
             
-            if (ActivityCompat.checkSelfPermission(this, 
-                    android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+        //     if (ActivityCompat.checkSelfPermission(this, 
+        //             android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 
-                android.location.Location lastKnownLocation = 
-                    locationManager.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
+        //         android.location.Location lastKnownLocation = 
+        //             locationManager.getLastKnownLocation(android.location.LocationManager.GPS_PROVIDER);
                 
-                if (lastKnownLocation == null) {
-                    lastKnownLocation = locationManager.getLastKnownLocation(
-                        android.location.LocationManager.NETWORK_PROVIDER);
-                }
+        //         if (lastKnownLocation == null) {
+        //             lastKnownLocation = locationManager.getLastKnownLocation(
+        //                 android.location.LocationManager.NETWORK_PROVIDER);
+        //         }
                 
-                if (lastKnownLocation != null) {
-                    locationData.latitude = lastKnownLocation.getLatitude();
-                    locationData.longitude = lastKnownLocation.getLongitude();
-                    locationData.accuracy = lastKnownLocation.getAccuracy();
-                    locationData.locationMethod = "gps";
+        //         if (lastKnownLocation != null) {
+        //             locationData.latitude = lastKnownLocation.getLatitude();
+        //             locationData.longitude = lastKnownLocation.getLongitude();
+        //             locationData.accuracy = lastKnownLocation.getAccuracy();
+        //             locationData.locationMethod = "gps";
                     
-                    // Check if at workplace (basic distance check)
-                    float workplaceLat = sharedPrefs.getFloat("workplace_lat", 0.0f);
-                    float workplaceLng = sharedPrefs.getFloat("workplace_lng", 0.0f);
+        //             // Check if at workplace (basic distance check)
+        //             float workplaceLat = sharedPrefs.getFloat("workplace_lat", 0.0f);
+        //             float workplaceLng = sharedPrefs.getFloat("workplace_lng", 0.0f);
                     
-                    if (workplaceLat != 0.0f && workplaceLng != 0.0f) {
-                        android.location.Location workplaceLocation = new android.location.Location("workplace");
-                        workplaceLocation.setLatitude(workplaceLat);
-                        workplaceLocation.setLongitude(workplaceLng);
+        //             if (workplaceLat != 0.0f && workplaceLng != 0.0f) {
+        //                 android.location.Location workplaceLocation = new android.location.Location("workplace");
+        //                 workplaceLocation.setLatitude(workplaceLat);
+        //                 workplaceLocation.setLongitude(workplaceLng);
                         
-                        float distance = lastKnownLocation.distanceTo(workplaceLocation);
-                        locationData.isAtWorkplace = distance <= 100.0f; // 100 meter radius
-                    }
-                }
-            }
+        //                 float distance = lastKnownLocation.distanceTo(workplaceLocation);
+        //                 locationData.isAtWorkplace = distance <= 100.0f; // 100 meter radius
+        //             }
+        //         }
+        //     }
             
-            return locationData;
+        //     return locationData;
             
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting location data", e);
-            return null;
-        }
+        // } catch (Exception e) {
+        //     Log.e(TAG, "Error getting location data", e);
+             return null;
+        // }
     }
 
     @Override
@@ -415,66 +387,6 @@ public class MainActivity extends AppCompatActivity implements
             isServiceBound = false;
         }
         
-        // Remove message listener
-        Wearable.getMessageApi(getGoogleApiClient()).removeListener(this);
-    }
-
-    // Ambient mode support
-    @Override
-    public AmbientModeSupport.AmbientCallback getAmbientCallback() {
-        return new AmbientModeSupport.AmbientCallback() {
-            @Override
-            public void onEnterAmbient(Bundle ambientDetails) {
-                Log.d(TAG, "Entering ambient mode");
-                // Reduce UI updates frequency in ambient mode
-                uiUpdateHandler.removeCallbacks(uiUpdateRunnable);
-                setupAmbientUIUpdates();
-            }
-
-            @Override
-            public void onExitAmbient() {
-                Log.d(TAG, "Exiting ambient mode");
-                // Resume normal UI updates
-                uiUpdateHandler.removeCallbacks(uiUpdateRunnable);
-                setupUIUpdateRunnable();
-                uiUpdateHandler.post(uiUpdateRunnable);
-            }
-        };
-    }
-
-    private void setupAmbientUIUpdates() {
-        // Update UI every 30 seconds in ambient mode to save battery
-        Runnable ambientUpdateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (isServiceBound && healthService != null) {
-                    updateHealthData();
-                }
-                uiUpdateHandler.postDelayed(this, 30000); // 30 seconds
-            }
-        };
-        uiUpdateHandler.post(ambientUpdateRunnable);
-    }
-
-    // Wearable message handling
-    @Override
-    public void onMessageReceived(MessageEvent messageEvent) {
-        Log.d(TAG, "Message received: " + messageEvent.getPath());
-        
-        if ("/stress_alert".equals(messageEvent.getPath())) {
-            // Handle stress alert from phone app or server
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Stress alert received!", Toast.LENGTH_LONG).show();
-                // Could trigger additional actions like vibration
-            });
-        }
-    }
-
-    // Helper method to get Google API client
-    private com.google.android.gms.common.api.GoogleApiClient getGoogleApiClient() {
-        return new com.google.android.gms.common.api.GoogleApiClient.Builder(this)
-            .addApi(Wearable.API)
-            .build();
     }
 
     // Clock In functionality
@@ -491,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements
 
         new Thread(() -> {
             try {
+                ApiClient apiClient = new ApiClient(this);
                 // Get comprehensive location data
                 LocationService.LocationData locationData = getLocationData();
                 
