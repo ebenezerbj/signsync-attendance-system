@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.signsync.wearable.ApiClient;
+import com.signsync.wearable.HealthData;
+
 public class DataSyncService extends Service {
     private static final String TAG = "DataSyncService";
     private static final String PREFS_NAME = "WearOSConfig";

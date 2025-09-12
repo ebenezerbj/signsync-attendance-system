@@ -11,12 +11,26 @@ android {
 
     defaultConfig {
         applicationId "com.signsync.wearable"
-        minSdkVersion 26  // Wear OS 2.0+
+        minSdkVersion 30  // Required for health services library
         targetSdkVersion 34
         versionCode 1
         versionName "1.0.0"
         
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions "device"
+    productFlavors {
+        wearos {
+            dimension "device"
+            minSdkVersion 30
+            buildConfigField "boolean", "IS_WEAROS", "true"
+        }
+        phone {
+            dimension "device"
+            minSdkVersion 26
+            buildConfigField "boolean", "IS_WEAROS", "false"
+        }
     }
 
     buildTypes {
@@ -54,8 +68,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.android.gms:play-services-tasks:18.0.2'
     
-    // Health and Sensors
-    implementation 'androidx.health:health-services-client:1.0.0-beta03'
+    // Health and Sensors (WearOS only)
+    wearosImplementation 'androidx.health:health-services-client:1.0.0-beta03'
     implementation 'androidx.concurrent:concurrent-futures:1.1.0'
     
     // Network and JSON

@@ -8,8 +8,21 @@
     
     <!-- SignSync Brand Colors -->
     <color name="primary_blue">#1E88E5</color>
+    <color name="primary_dark">#1565C0</color>
     <color name="primary_dark_blue">#1565C0</color>
+    <color name="accent_blue">#1E88E5</color>
     <color name="accent_green">#43A047</color>
+    <color name="success_green">#4CAF50</color>
+    
+    <!-- Background Colors -->
+    <color name="background_color">#FF000000</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFFFF</color>
+    <color name="text_secondary">#FFCCCCCC</color>
+    
+    <!-- UI Colors -->
+    <color name="divider_color">#FF444444</color>
     
     <!-- Health Status Colors -->
     <color name="health_red">#FFFF3B30</color>
@@ -24,6 +37,28 @@
     <color name="button_stop_pressed">#D32F2F</color>
     <color name="button_config_bg">#424242</color>
     <color name="button_config_pressed">#303030</color>
+    <color name="button_reset_bg">#FF9800</color>
+    <color name="button_save_bg">#4CAF50</color>
+    <color name="button_test_bg">#2196F3</color>
+    
+    <!-- Warning Colors -->
+    <color name="warning_orange">#FF9800</color>
+    
+    <!-- Input Colors -->
+    <color name="input_bg">#FF333333</color>
+    <color name="input_border">#FF666666</color>
+    
+    <!-- Progress Colors -->
+    <color name="progress_bg">#FF444444</color>
+    
+    <!-- Status Colors -->
+    <color name="status_error_bg">#F44336</color>
+    <color name="status_info_bg">#2196F3</color>
+    <color name="status_success_bg">#4CAF50</color>
+    
+    <!-- Switch Colors -->
+    <color name="switch_track_on">#4CAF50</color>
+    <color name="switch_track_off">#FF666666</color>
     
     <!-- Notification Colors -->
     <color name="notification_bg">#212121</color>

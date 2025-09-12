@@ -236,6 +236,9 @@ public class ConfigActivity extends AppCompatActivity implements
             serverUrl += "/";
         }
         
+        // Create a final copy for use in lambda
+        final String finalServerUrl = serverUrl;
+        
         Log.d(TAG, "Saving configuration for employee: " + employeeId);
         
         // Show loading state
@@ -260,7 +263,7 @@ public class ConfigActivity extends AppCompatActivity implements
                             SharedPreferences.Editor editor = sharedPrefs.edit();
                             editor.putString("employee_id", employeeId);
                             editor.putString("employee_pin", pin); // Note: In production, consider more secure storage
-                            editor.putString("api_base_url", serverUrl);
+                            editor.putString("api_base_url", finalServerUrl);
                             editor.putBoolean("auto_start_monitoring", autoStartSwitch.isChecked());
                             editor.putBoolean("battery_optimization", batteryOptimizationSwitch.isChecked());
                             editor.putLong("config_saved_time", System.currentTimeMillis());
