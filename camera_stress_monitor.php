@@ -13,6 +13,25 @@ $messageType = '';
 
 // Handle manual camera trigger
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
+    if ($_POST['action'] === 'acknowledge_alert') {
+        $alertID = $_POST['alert_id'];
+        $userID = $_SESSION['user_id'];
+        
+        $stmt = $conn->prepare("
+            UPDATE tbl_biometric_alerts 
+            SET IsAcknowledged = 1, AcknowledgedBy = ?, AcknowledgedAt = NOW()
+            WHERE AlertID = ?
+        ");
+        
+        header('Content-Type: application/json');
+        if ($stmt->execute([$userID, $alertID])) {
+            echo json_encode(['success' => true, 'message' => 'Alert acknowledged.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to acknowledge alert.']);
+        }
+        exit;
+    }
+
     if ($_POST['action'] === 'trigger_camera') {
         $employeeID = $_POST['employee_id'];
         $reason = $_POST['reason'] ?? 'Manual monitoring request';
@@ -376,13 +395,20 @@ $cameraStats = $conn->query("
                                             <?php endif; ?>
                                         </small>
                                     </div>
-                                    <?php if ($alert['active_sessions'] == 0): ?>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="triggerCamera('<?= $alert['EmployeeID'] ?>', 'stress_alert')">
-                                        <i class="bi bi-camera"></i>
-                                    </button>
-                                    <?php else: ?>
-                                    <span class="badge bg-success">Live</span>
-                                    <?php endif; ?>
+                                    <div class="btn-group">
+                                        <?php if ($alert['active_sessions'] == 0): ?>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="triggerCamera('<?= $alert['EmployeeID'] ?>', 'stress_alert')" title="Activate Camera">
+                                            <i class="bi bi-camera"></i>
+                                        </button>
+                                        <?php else: ?>
+                                        <button class="btn btn-sm btn-success" disabled>
+                                            <i class="bi bi-record-circle"></i> Live
+                                        </button>
+                                        <?php endif; ?>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="acknowledgeAlert(<?= $alert['AlertID'] ?>)" title="Acknowledge Alert">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -396,6 +422,18 @@ $cameraStats = $conn->query("
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    function acknowledgeAlert(alertId) {
+        if (confirm('Are you sure you want to acknowledge this alert?')) {
+            $.post(window.location.href, { action: 'acknowledge_alert', alert_id: alertId }, function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to acknowledge alert: ' + response.message);
+                }
+            }, 'json');
+        }
+    }
+
     function triggerCamera(employeeId, reason) {
         if (confirm('Activate camera monitoring for this employee?')) {
             const form = document.createElement('form');
