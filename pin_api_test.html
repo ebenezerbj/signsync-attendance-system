@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PIN API Direct Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h2>🔐 PIN API Direct Test</h2>
+    <div id="results"></div>
+
+    <script>
+        // Test different PIN scenarios
+        async function testPIN(employeeId, pin, testName) {
+            const resultDiv = document.getElementById('results');
+            
+            try {
+                const response = await fetch('signsync_pin_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        employee_id: employeeId,
+                        pin: pin
+                    })
+                });
+                
+                const result = await response.json();
+                
+                let resultHTML = `<div class="${result.success ? 'success' : 'error'}">`;
+                resultHTML += `<h4>${testName}</h4>`;
+                resultHTML += `<p>Employee: ${employeeId}, PIN: ${pin}</p>`;
+                
+                if (result.success) {
+                    resultHTML += `<p>✅ SUCCESS: ${result.message}</p>`;
+                    resultHTML += `<p>Employee: ${result.data.name}</p>`;
+                    resultHTML += `<p>PIN Source: ${result.data.pin_source}</p>`;
+                } else {
+                    resultHTML += `<p>❌ FAILED: ${result.message}</p>`;
+                }
+                
+                resultHTML += '</div>';
+                resultDiv.innerHTML += resultHTML;
+                
+            } catch (error) {
+                const errorHTML = `<div class="error">
+                    <h4>${testName}</h4>
+                    <p>❌ ERROR: ${error.message}</p>
+                </div>`;
+                resultDiv.innerHTML += errorHTML;
+            }
+        }
+        
+        // Run tests when page loads
+        window.onload = async function() {
+            document.getElementById('results').innerHTML = '<p>🧪 Running PIN tests...</p>';
+            
+            // Test with common employee IDs and PINs
+            await testPIN('EMP001', '1234', 'Test 1: EMP001 with default PIN');
+            await testPIN('TEST001', '1234', 'Test 2: TEST001 with default PIN');
+            await testPIN('AKCBSTF0005', '1234', 'Test 3: AKCBSTF0005 with default PIN');
+            await testPIN('EMP001', '7890', 'Test 4: EMP001 with phone PIN');
+            await testPIN('AKCBSTF0005', '0005', 'Test 5: AKCBSTF0005 with ID PIN');
+            await testPIN('INVALID', '1234', 'Test 6: Invalid employee (should fail)');
+            await testPIN('EMP001', '9999', 'Test 7: Valid employee, invalid PIN (should fail)');
+        };
+    </script>
+</body>
+</html>

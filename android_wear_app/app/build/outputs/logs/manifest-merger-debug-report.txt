@@ -1,0 +1,155 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:2:1-41:12
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:2:1-41:12
+MERGED from [androidx.appcompat:appcompat:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5badac51a04814dfcea02a7f68a34b6f\transformed\appcompat-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.fragment:fragment:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\a736a1c9cbbbd1a94dcd086212f4e3f6\transformed\fragment-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\4f4173ddb94e657b5b012b8cdfb350b9\transformed\appcompat-resources-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\6ab5ff6d7ae6e8170f8fa2968d818c67\transformed\drawerlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\196097c7a2c849cbc007a59610f808d4\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\43e8302e689c72c32bcf994a4408a12f\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\c752fe63d2d15b769365cc680863e07a\transformed\activity-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\f9099643e4c25511878a86d7e58ea09b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\0ef42de24447c0e781f05caae8de6247\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\524100210f4bb413c426664c103d3b50\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf708a79df15e9ed2e40e4f83f9a41dc\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\d01c4606dab5e5136dc375d9b72381ab\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\40c26ea4532d0b6a5a4e1bcedba30410\transformed\lifecycle-runtime-2.1.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\581ebc9eac78621544be00eb606cdc01\transformed\lifecycle-viewmodel-2.1.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5e94514088979bc58153350806251234\transformed\savedstate-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\84d335b35e48b4564340dcc25bbf5b7b\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\966583ab0d6f38059b69f462fb2b0eb4\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\2a71af9dc711f834a2ac110d163e1b12\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf25629c3def91840478cf85d9c151bb\transformed\core-runtime-2.0.0\AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:3:5-51
+	android:versionCode
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:6:5-67
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:6:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:7:22-76
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:8:5-79
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.WAKE_LOCK
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:9:5-68
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:9:22-65
+uses-feature#android.hardware.type.watch
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:12:5-89
+	android:required
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:12:62-86
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:12:19-61
+application
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:14:5-39:19
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:14:5-39:19
+MERGED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf708a79df15e9ed2e40e4f83f9a41dc\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf708a79df15e9ed2e40e4f83f9a41dc\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:24:18-86
+	android:label
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:17:9-41
+	android:debuggable
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:19:9-34
+	tools:ignore
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:20:9-42
+	android:icon
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:16:9-46
+	android:allowBackup
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:15:9-35
+	android:theme
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:18:9-50
+activity#com.signsync.attendance.MainActivity
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:22:9-30:20
+	android:label
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:25:13-45
+	android:exported
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:24:13-36
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:23:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:26:13-29:29
+action#android.intent.action.MAIN
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:27:17-69
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:27:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:28:17-77
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:28:27-74
+activity#com.signsync.attendance.TestActivity
+ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:33:9-37:20
+	android:label
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:36:13-42
+	android:exported
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:35:13-36
+	android:name
+		ADDED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml:34:13-41
+uses-sdk
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+MERGED from [androidx.appcompat:appcompat:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5badac51a04814dfcea02a7f68a34b6f\transformed\appcompat-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5badac51a04814dfcea02a7f68a34b6f\transformed\appcompat-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\a736a1c9cbbbd1a94dcd086212f4e3f6\transformed\fragment-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\a736a1c9cbbbd1a94dcd086212f4e3f6\transformed\fragment-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\4f4173ddb94e657b5b012b8cdfb350b9\transformed\appcompat-resources-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\4f4173ddb94e657b5b012b8cdfb350b9\transformed\appcompat-resources-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\6ab5ff6d7ae6e8170f8fa2968d818c67\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\6ab5ff6d7ae6e8170f8fa2968d818c67\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\196097c7a2c849cbc007a59610f808d4\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\196097c7a2c849cbc007a59610f808d4\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\43e8302e689c72c32bcf994a4408a12f\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\43e8302e689c72c32bcf994a4408a12f\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\c752fe63d2d15b769365cc680863e07a\transformed\activity-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\c752fe63d2d15b769365cc680863e07a\transformed\activity-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\f9099643e4c25511878a86d7e58ea09b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\f9099643e4c25511878a86d7e58ea09b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\0ef42de24447c0e781f05caae8de6247\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\0ef42de24447c0e781f05caae8de6247\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\524100210f4bb413c426664c103d3b50\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\524100210f4bb413c426664c103d3b50\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf708a79df15e9ed2e40e4f83f9a41dc\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf708a79df15e9ed2e40e4f83f9a41dc\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\d01c4606dab5e5136dc375d9b72381ab\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\d01c4606dab5e5136dc375d9b72381ab\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\40c26ea4532d0b6a5a4e1bcedba30410\transformed\lifecycle-runtime-2.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\40c26ea4532d0b6a5a4e1bcedba30410\transformed\lifecycle-runtime-2.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\581ebc9eac78621544be00eb606cdc01\transformed\lifecycle-viewmodel-2.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\581ebc9eac78621544be00eb606cdc01\transformed\lifecycle-viewmodel-2.1.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5e94514088979bc58153350806251234\transformed\savedstate-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5e94514088979bc58153350806251234\transformed\savedstate-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\84d335b35e48b4564340dcc25bbf5b7b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\84d335b35e48b4564340dcc25bbf5b7b\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\966583ab0d6f38059b69f462fb2b0eb4\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\966583ab0d6f38059b69f462fb2b0eb4\transformed\lifecycle-livedata-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\2a71af9dc711f834a2ac110d163e1b12\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\2a71af9dc711f834a2ac110d163e1b12\transformed\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf25629c3def91840478cf85d9c151bb\transformed\core-runtime-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\cf25629c3def91840478cf85d9c151bb\transformed\core-runtime-2.0.0\AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\laragon\www\attendance_register\android_wear_app\app\src\main\AndroidManifest.xml

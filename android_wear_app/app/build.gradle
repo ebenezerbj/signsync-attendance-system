@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.signsync.attendance'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.signsync.attendance"
+        minSdk 19  // Android 4.4 - compatible with WearOS 1.7.3
+        targetSdk 23  // Android 6.0 - optimal for WearOS 1.7.3
+        versionCode 4
+        versionName "1.3"
+        
+        // Absolutely minimal configuration
+        // multiDexEnabled true
+        
+        // Basic Android compatibility
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            // Remove applicationIdSuffix to avoid conflicts
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    // Add build features
+    buildFeatures {
+        buildConfig true
+    }
+    
+    // Packaging options to avoid conflicts
+    packagingOptions {
+        pickFirst '**/libc++_shared.so'
+        pickFirst '**/libjsc.so'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    // Absolute minimum dependencies for Watch AOS 1.7.3
+    implementation 'androidx.core:core:1.1.0'  // Very old version
+    implementation 'androidx.appcompat:appcompat:1.1.0'  // Compatible with old systems
+}

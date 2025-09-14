@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Minimal permissions for Watch AOS 1.7.3 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- WearOS compatibility -->
+    <uses-feature android:name="android.hardware.type.watch" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/amantin_logo"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo"
+        android:debuggable="true"
+        tools:ignore="HardcodedDebugMode">
+            
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Test activity for installation verification -->
+        <activity
+            android:name=".TestActivity"
+            android:exported="true"
+            android:label="SignSync Test">
+        </activity>
+            
+    </application>
+
+</manifest>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SIGNSYNC PIN API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>SIGNSYNC PIN API Test</h1>
+    <p>Testing PIN validation for employees in your database.</p>
+    
+    <button onclick="testPin('AKCBSTF0005', '1602', 'STEPHEN SARFO - Phone PIN')">Test STEPHEN SARFO - Phone PIN (1602)</button><br>
+    <button onclick="testPin('AKCBSTF0005', '1234', 'STEPHEN SARFO - Default PIN')">Test STEPHEN SARFO - Default PIN (1234)</button><br>
+    <button onclick="testPin('AKCBSTF0005', '0005', 'STEPHEN SARFO - ID PIN')">Test STEPHEN SARFO - ID PIN (0005)</button><br>
+    <button onclick="testPin('EMP001', '1234', 'John Doe - Default PIN')">Test John Doe - Default PIN (1234)</button><br>
+    <button onclick="testPin('INVALID', '1234', 'Invalid Employee Test')">Test Invalid Employee</button><br>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testPin(employeeId, pin, description) {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                const response = await fetch('/signsync_pin_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        employee_id: employeeId,
+                        pin: pin
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultsDiv.innerHTML += `
+                        <div class="result success">
+                            <strong>✅ ${description}</strong><br>
+                            Message: ${result.message}<br>
+                            Employee: ${result.data.name}<br>
+                            PIN Source: ${result.data.pin_source}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="result error">
+                            <strong>❌ ${description}</strong><br>
+                            Error: ${result.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML += `
+                    <div class="result error">
+                        <strong>❌ ${description}</strong><br>
+                        Network Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

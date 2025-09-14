@@ -1,0 +1,110 @@
+[
+    {
+        "merged": "com.signsync.attendance.app-release-6:/layout_activity_device_registration.xml.flat",
+        "source": "com.signsync.attendance.app-main-7:/layout/activity_device_registration.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-anydpi-v21_ic_launcher_background.xml.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-anydpi-v21/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-mdpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-ldpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-ldpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.signsync.attendance.app-main-7:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxxhdpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable_amantin_logo.png.flat",
+        "source": "com.signsync.attendance.app-main-7:/drawable/amantin_logo.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-ldpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-ldpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xhdpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xhdpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-hdpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-hdpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxhdpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxhdpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/layout_activity_main.xml.flat",
+        "source": "com.signsync.attendance.app-main-7:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-mdpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-mdpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.signsync.attendance.app-main-7:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/layout_activity_employee_auth.xml.flat",
+        "source": "com.signsync.attendance.app-main-7:/layout/activity_employee_auth.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxxhdpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxxhdpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-hdpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-hdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-mdpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-mdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxhdpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-anydpi-v21_ic_launcher_simple.xml.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-anydpi-v21/ic_launcher_simple.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-ldpi_ic_launcher_simple.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-ldpi/ic_launcher_simple.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-anydpi-v21_ic_launcher_foreground.xml.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-anydpi-v21/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-hdpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "com.signsync.attendance.app-release-6:/drawable-xhdpi_ic_launcher_background.png.flat",
+        "source": "com.signsync.attendance.app-pngs-3:/drawable-xhdpi/ic_launcher_background.png"
+    }
+]

@@ -1,0 +1,66 @@
+[
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_notification_settings.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_notification_settings.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_login.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_emergency_contacts.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_emergency_contacts.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_change_pin.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_change_pin.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_main.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/item_attendance_correction.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/item_attendance_correction.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_system_settings.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_system_settings.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_admin_panel.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_admin_panel.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/item_leave_request.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/item_leave_request.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_simple_employee_portal.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_simple_employee_portal.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/item_attendance_summary.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/item_attendance_summary.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_notification_center.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_notification_center.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_security_audit.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_security_audit.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_change_password.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_change_password.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_schedule_management.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_schedule_management.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeReleaseResources-73:/layout/activity_enhanced_employee_portal.xml",
+        "source": "com.signsync.attendance.app-main-75:/layout/activity_enhanced_employee_portal.xml"
+    }
+]

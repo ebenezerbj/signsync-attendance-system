@@ -1,0 +1,140 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.signsync.attendance'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.signsync.attendance"
+        minSdk 26  // Android 8.0 - required for Apache POI
+        targetSdk 34  // Latest Android for Google Play
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += ["-Xlint:-options"]
+    }
+    
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+    }
+}
+
+dependencies {
+    // Core Android libraries
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.navigation:navigation-fragment:2.7.1'
+    implementation 'androidx.navigation:navigation-ui:2.7.1'
+    
+    // ViewModel and LiveData
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    
+    // RecyclerView for lists
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    
+    // Network libraries
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    
+    // Image loading and processing
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    
+    // Charts and graphs
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.5'
+    
+    // Date/Time picker and calendar
+    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.4.6'
+    
+    // Swipe refresh and pull to refresh
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    
+    // Location services and maps
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-places:17.0.0'
+    
+    // Camera and QR/Barcode scanning
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+    implementation 'androidx.camera:camera-camera2:1.3.0'
+    implementation 'androidx.camera:camera-lifecycle:1.3.0'
+    implementation 'androidx.camera:camera-view:1.3.0'
+    
+    // File operations and document handling - removed heavy Apache POI
+    implementation 'commons-io:commons-io:2.11.0'
+    // Removed: implementation 'com.itextpdf:itext7-core:7.2.5'
+    // Removed: implementation 'org.apache.poi:poi:5.2.4'
+    // Removed: implementation 'org.apache.poi:poi-ooxml:5.2.4'
+    
+    // Database (Room)
+    implementation 'androidx.room:room-runtime:2.5.0'
+    // Removed RxJava dependency: implementation 'androidx.room:room-rxjava3:2.5.0'
+    annotationProcessor 'androidx.room:room-compiler:2.5.0'
+    
+    // Preferences and settings
+    implementation 'androidx.preference:preference:1.2.1'
+    
+    // Biometric authentication
+    implementation 'androidx.biometric:biometric:1.1.0'
+    
+    // Background processing
+    implementation 'androidx.work:work-runtime:2.8.1'
+    // Removed RxJava dependency: implementation 'androidx.work:work-rxjava3:2.8.1'
+    
+    // Permissions handling
+    implementation 'com.karumi:dexter:6.2.3'
+    
+    // Animation libraries - kept lightweight ones
+    implementation 'com.airbnb.android:lottie:6.1.0'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    
+    // Material design components
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    
+    // Security and encryption
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
+    
+    // Excel and CSV export - lightweight alternative
+    implementation 'com.opencsv:opencsv:5.7.1'
+    
+    // Removed Firebase dependencies for now
+    // implementation 'com.google.firebase:firebase-messaging:23.2.1'
+    // implementation 'com.google.firebase:firebase-analytics:21.3.0'
+    
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}

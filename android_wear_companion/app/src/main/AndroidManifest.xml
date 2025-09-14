@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Essential permissions only -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- WearOS feature -->
+    <uses-feature android:name="android.hardware.type.watch" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo">
+        
+        <!-- Main Activity - Simple Clock In/Out -->
+        <activity
+            android:name=".SimpleClockActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Quick PIN entry -->
+        <activity
+            android:name=".QuickPinActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+
+    </application>
+
+</manifest>

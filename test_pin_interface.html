@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIN System Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { background: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { color: #28a745; } .error { color: #dc3545; }
+        input, button { padding: 10px; margin: 5px; }
+        button { background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #results { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔐 PIN System Test</h1>
+    
+    <div class="test-section">
+        <h3>Test Employee PIN</h3>
+        <label>Employee ID:</label>
+        <input type="text" id="employeeId" value="EMP001" placeholder="Enter Employee ID">
+        <br>
+        <label>PIN:</label>
+        <input type="password" id="pin" value="1234" placeholder="Enter PIN">
+        <br>
+        <button onclick="testPin()">Test PIN</button>
+        <button onclick="testDefaultPin()">Test Default PIN (1234)</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        async function testPin() {
+            const employeeId = document.getElementById('employeeId').value;
+            const pin = document.getElementById('pin').value;
+            
+            if (!employeeId || !pin) {
+                document.getElementById('results').innerHTML = '<div class="error">Please enter both Employee ID and PIN</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('signsync_pin_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        employee_id: employeeId,
+                        pin: pin
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('results').innerHTML = `
+                        <div class="success">
+                            <h4>✅ PIN Test Successful!</h4>
+                            <p><strong>Message:</strong> ${result.message}</p>
+                            <p><strong>Employee:</strong> ${result.data.name}</p>
+                            <p><strong>Department:</strong> ${result.data.department || 'N/A'}</p>
+                            <p><strong>PIN Source:</strong> ${result.data.pin_source}</p>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('results').innerHTML = `
+                        <div class="error">
+                            <h4>❌ PIN Test Failed</h4>
+                            <p><strong>Error:</strong> ${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <div class="error">
+                        <h4>❌ API Error</h4>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function testDefaultPin() {
+            document.getElementById('pin').value = '1234';
+            await testPin();
+        }
+        
+        // Auto-test on page load
+        window.onload = function() {
+            testDefaultPin();
+        };
+    </script>
+</body>
+</html>

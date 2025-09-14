@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Wear Device Management - SignSync</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #3498db;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            padding: 30px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .device-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        .device-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .device-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .battery-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .battery-bar {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .battery-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .registration-code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            border: 2px dashed #3498db;
+            margin: 10px 0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Android Wear Device Management</h1>
+            <p>Register, bind, and manage Android Wear devices for attendance tracking</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="showTab('register')">📱 Register Device</button>
+            <button class="tab" onclick="showTab('bind')">🔗 Bind Employee</button>
+            <button class="tab" onclick="showTab('devices')">⌚ Manage Devices</button>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDevices">0</div>
+                    <div class="stat-label">Total Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeDevices">0</div>
+                    <div class="stat-label">Active Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="boundDevices">0</div>
+                    <div class="stat-label">Bound to Employees</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingDevices">0</div>
+                    <div class="stat-label">Pending Binding</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📱 Quick Actions</h3>
+                <p>Use the tabs above to register new Android Wear devices, bind them to employees, or manage existing devices.</p>
+                <br>
+                <button class="btn btn-primary" onclick="showTab('register')">Register New Device</button>
+                <button class="btn btn-success" onclick="showTab('bind')">Bind Device to Employee</button>
+            </div>
+        </div>
+        
+        <!-- Register Device Tab -->
+        <div id="register" class="tab-content">
+            <div class="card">
+                <h3>📱 Register New Android Wear Device</h3>
+                <p>Add a new Android Wear device to the attendance system. The device will receive a registration code for employee binding.</p>
+                
+                <div id="registerAlert"></div>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="deviceName">Device Name:</label>
+                        <input type="text" id="deviceName" name="device_name" placeholder="e.g., John's WS10 Ultra" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deviceModel">Device Model:</label>
+                        <input type="text" id="deviceModel" name="device_model" placeholder="e.g., WS10 Ultra, Galaxy Watch" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="androidVersion">Android Version:</label>
+                        <input type="text" id="androidVersion" name="android_version" placeholder="e.g., Android 11">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="wearOSVersion">Wear OS Version:</label>
+                        <input type="text" id="wearOSVersion" name="wearos_version" placeholder="e.g., Wear OS 3.0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="macAddress">MAC Address:</label>
+                        <input type="text" id="macAddress" name="mac_address" placeholder="e.g., AA:BB:CC:DD:EE:FF">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serialNumber">Serial Number:</label>
+                        <input type="text" id="serialNumber" name="serial_number" placeholder="Device Serial Number">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">📱 Register Device</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Bind Employee Tab -->
+        <div id="bind" class="tab-content">
+            <div class="card">
+                <h3>🔗 Bind Device to Employee</h3>
+                <p>Enter the registration code from the Android Wear device and select an employee to complete the binding process.</p>
+                
+                <div id="bindAlert"></div>
+                
+                <form id="bindForm">
+                    <div class="form-group">
+                        <label for="registrationCode">Registration Code:</label>
+                        <input type="text" id="registrationCode" name="registration_code" placeholder="6-digit code from device" maxlength="6" style="text-transform: uppercase;" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="employeeSelect">Select Employee:</label>
+                        <select id="employeeSelect" name="employee_id" required>
+                            <option value="">-- Select Employee --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminUser">Admin User:</label>
+                        <input type="text" id="adminUser" name="admin_user" value="ADMIN" placeholder="Your admin username">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">🔗 Bind Device</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Manage Devices Tab -->
+        <div id="devices" class="tab-content">
+            <div class="card">
+                <h3>⌚ Registered Devices</h3>
+                <p>Manage all registered Android Wear devices in your attendance system.</p>
+                
+                <button class="btn btn-primary" onclick="loadDevices()">🔄 Refresh Devices</button>
+            </div>
+            
+            <div id="devicesContainer" class="device-grid">
+                <!-- Devices will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load data based on tab
+            if (tabName === 'overview') {
+                loadOverviewStats();
+            } else if (tabName === 'bind') {
+                loadEmployees();
+            } else if (tabName === 'devices') {
+                loadDevices();
+            }
+        }
+        
+        // Load overview statistics
+        async function loadOverviewStats() {
+            try {
+                const response = await fetch('wearos_device_registration.php?action=list_devices');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const devices = result.data;
+                    const totalDevices = devices.length;
+                    const activeDevices = devices.filter(d => d.IsActive).length;
+                    const boundDevices = devices.filter(d => d.EmployeeID).length;
+                    const pendingDevices = devices.filter(d => !d.EmployeeID).length;
+                    
+                    document.getElementById('totalDevices').textContent = totalDevices;
+                    document.getElementById('activeDevices').textContent = activeDevices;
+                    document.getElementById('boundDevices').textContent = boundDevices;
+                    document.getElementById('pendingDevices').textContent = pendingDevices;
+                }
+            } catch (error) {
+                console.error('Error loading overview stats:', error);
+            }
+        }
+        
+        // Load employees for binding
+        async function loadEmployees() {
+            try {
+                const response = await fetch('get_employee.php');
+                const employees = await response.json();
+                
+                const select = document.getElementById('employeeSelect');
+                select.innerHTML = '<option value="">-- Select Employee --</option>';
+                
+                employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.EmployeeID;
+                    option.textContent = `${emp.FullName} (${emp.EmployeeID})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+            }
+        }
+        
+        // Load and display devices
+        async function loadDevices() {
+            try {
+                const response = await fetch('wearos_device_registration.php?action=list_devices');
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayDevices(result.data);
+                } else {
+                    showAlert('devicesContainer', 'Error loading devices: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('devicesContainer', 'Error loading devices: ' + error.message, 'error');
+            }
+        }
+        
+        // Display devices in grid
+        function displayDevices(devices) {
+            const container = document.getElementById('devicesContainer');
+            
+            if (devices.length === 0) {
+                container.innerHTML = '<div class="card"><p>No devices registered yet. Use the "Register Device" tab to add your first Android Wear device.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = devices.map(device => {
+                const status = device.EmployeeID ? 'active' : 'pending';
+                const statusText = device.EmployeeID ? 'Bound to Employee' : 'Pending Binding';
+                const batteryLevel = device.BatteryLevel || 0;
+                const batteryColor = batteryLevel > 50 ? '#2ecc71' : batteryLevel > 20 ? '#f39c12' : '#e74c3c';
+                
+                return `
+                    <div class="device-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4>${device.DeviceName}</h4>
+                            <span class="device-status status-${status}">${statusText}</span>
+                        </div>
+                        
+                        <p><strong>Device ID:</strong> ${device.DeviceID}</p>
+                        <p><strong>Model:</strong> ${device.DeviceModel}</p>
+                        
+                        ${device.EmployeeID ? `
+                            <p><strong>Employee:</strong> ${device.EmployeeName} (${device.EmployeeID})</p>
+                            <p><strong>Department:</strong> ${device.DepartmentName || 'N/A'}</p>
+                        ` : `
+                            <div class="registration-code">${device.RegistrationCode}</div>
+                            <p style="text-align: center; color: #666; font-size: 0.9rem;">Share this code for employee binding</p>
+                        `}
+                        
+                        <div class="battery-indicator">
+                            <span>🔋</span>
+                            <div class="battery-bar">
+                                <div class="battery-fill" style="width: ${batteryLevel}%; background: ${batteryColor};"></div>
+                            </div>
+                            <span>${batteryLevel}%</span>
+                        </div>
+                        
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                            <strong>Registered:</strong> ${new Date(device.RegisteredAt).toLocaleDateString()}
+                            ${device.LastSeen ? `<br><strong>Last Seen:</strong> ${new Date(device.LastSeen).toLocaleString()}` : ''}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Register device form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            formData.append('action', 'register_device');
+            
+            try {
+                const response = await fetch('wearos_device_registration.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('registerAlert', `
+                        Device registered successfully!<br>
+                        <strong>Device ID:</strong> ${result.data.device_id}<br>
+                        <strong>Registration Code:</strong> <span style="font-size: 1.2rem; font-weight: bold;">${result.data.registration_code}</span><br>
+                        Use this code to bind the device to an employee.
+                    `, 'success');
+                    e.target.reset();
+                    loadOverviewStats();
+                } else {
+                    showAlert('registerAlert', 'Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('registerAlert', 'Error: ' + error.message, 'error');
+            }
+        });
+        
+        // Bind device form submission
+        document.getElementById('bindForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            formData.append('action', 'bind_employee');
+            
+            try {
+                const response = await fetch('wearos_device_registration.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('bindAlert', `
+                        Device successfully bound!<br>
+                        <strong>Device:</strong> ${result.data.device_name}<br>
+                        <strong>Employee:</strong> ${result.data.employee_name} (${result.data.employee_id})
+                    `, 'success');
+                    e.target.reset();
+                    loadOverviewStats();
+                } else {
+                    showAlert('bindAlert', 'Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('bindAlert', 'Error: ' + error.message, 'error');
+            }
+        });
+        
+        // Show alert messages
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            // Auto-hide success alerts after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        // Format registration code input
+        document.getElementById('registrationCode').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+        
+        // Load initial data
+        loadOverviewStats();
+    </script>
+</body>
+</html>

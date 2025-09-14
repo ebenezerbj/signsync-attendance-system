@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Type"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_from_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="From Date" />
+
+    <TextView
+        android:id="@+id/text_to_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To Date" />
+
+    <TextView
+        android:id="@+id/text_reason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reason" />
+
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status" />
+
+</LinearLayout>

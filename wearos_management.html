@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WearOS Device Registration System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); border: 1px solid rgba(0, 0, 0, 0.125); }
+        .device-card { transition: transform 0.2s ease-in-out; }
+        .device-card:hover { transform: translateY(-2px); }
+        .status-badge { font-size: 0.8em; }
+        .registration-code { font-family: 'Courier New', monospace; font-weight: bold; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-watch text-primary"></i> WearOS Device Management</h1>
+                <button class="btn btn-primary" onclick="refreshDevices()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Total Devices</h5>
+                    <h2 id="totalDevices" class="text-primary">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Pending Binding</h5>
+                    <h2 id="pendingDevices" class="text-warning">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Active Devices</h5>
+                    <h2 id="activeDevices" class="text-success">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Online Now</h5>
+                    <h2 id="onlineDevices" class="text-info">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Registration Form -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-plus"></i> Register New Device</h5>
+                </div>
+                <div class="card-body">
+                    <form id="registrationForm">
+                        <div class="mb-3">
+                            <label for="deviceName" class="form-label">Device Name</label>
+                            <input type="text" class="form-control" id="deviceName" placeholder="e.g., WS10 ULTRA - John's Watch">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="deviceModel" class="form-label">Model</label>
+                                    <input type="text" class="form-control" id="deviceModel" value="WS10 ULTRA">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="androidVersion" class="form-label">Android Version</label>
+                                    <input type="text" class="form-control" id="androidVersion" placeholder="e.g., 10">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="macAddress" class="form-label">MAC Address</label>
+                                    <input type="text" class="form-control" id="macAddress" placeholder="AA:BB:CC:DD:EE:FF">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="serialNumber" class="form-label">Serial Number</label>
+                                    <input type="text" class="form-control" id="serialNumber" placeholder="Device Serial">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Register Device
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Employee Binding Form -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-link"></i> Bind Device to Employee</h5>
+                </div>
+                <div class="card-body">
+                    <form id="bindingForm">
+                        <div class="mb-3">
+                            <label for="registrationCode" class="form-label">Registration Code</label>
+                            <input type="text" class="form-control" id="registrationCode" placeholder="6-digit code" maxlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="employeeId" class="form-label">Employee ID</label>
+                            <input type="text" class="form-control" id="employeeId" placeholder="Employee ID">
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-link"></i> Bind Device
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devices List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Registered Devices</h5>
+                </div>
+                <div class="card-body">
+                    <div id="devicesList" class="row">
+                        <!-- Devices will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Modals -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalTitle">Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="messageModalBody">
+                <!-- Message content -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API_URL = '/attendance_register/wearos_device_registration.php';
+
+// Load devices when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    refreshDevices();
+});
+
+// Register device form
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        action: 'register_device',
+        device_name: document.getElementById('deviceName').value,
+        device_model: document.getElementById('deviceModel').value,
+        android_version: document.getElementById('androidVersion').value,
+        wearos_version: '2.0',
+        mac_address: document.getElementById('macAddress').value,
+        serial_number: document.getElementById('serialNumber').value
+    };
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('Success', `Device registered successfully!<br>
+                <strong>Device ID:</strong> ${result.data.device_id}<br>
+                <strong>Registration Code:</strong> <span class="registration-code text-primary">${result.data.registration_code}</span><br>
+                <em>Use this code to bind the device to an employee.</em>`, 'success');
+            document.getElementById('registrationForm').reset();
+            refreshDevices();
+        } else {
+            showMessage('Error', result.message, 'error');
+        }
+    } catch (error) {
+        showMessage('Error', 'Failed to register device: ' + error.message, 'error');
+    }
+});
+
+// Bind device form
+document.getElementById('bindingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const data = {
+        action: 'bind_employee',
+        registration_code: document.getElementById('registrationCode').value,
+        employee_id: document.getElementById('employeeId').value
+    };
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showMessage('Success', 'Device bound to employee successfully!', 'success');
+            document.getElementById('bindingForm').reset();
+            refreshDevices();
+        } else {
+            showMessage('Error', result.message, 'error');
+        }
+    } catch (error) {
+        showMessage('Error', 'Failed to bind device: ' + error.message, 'error');
+    }
+});
+
+// Refresh devices list
+async function refreshDevices() {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'list_devices' })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            displayDevices(result.data);
+            updateStatistics(result.data);
+        } else {
+            console.error('Failed to load devices:', result.message);
+            document.getElementById('devicesList').innerHTML = 
+                '<div class="col-12"><div class="alert alert-warning">Failed to load devices: ' + result.message + '</div></div>';
+        }
+    } catch (error) {
+        console.error('Error loading devices:', error);
+        document.getElementById('devicesList').innerHTML = 
+            '<div class="col-12"><div class="alert alert-danger">Error loading devices: ' + error.message + '</div></div>';
+    }
+}
+
+// Display devices
+function displayDevices(devices) {
+    const container = document.getElementById('devicesList');
+    
+    if (!devices || devices.length === 0) {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-info">No devices registered yet.</div></div>';
+        return;
+    }
+    
+    container.innerHTML = devices.map(device => `
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card device-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="card-title">${device.DeviceName}</h6>
+                        <span class="badge ${getStatusBadgeClass(device.Status)} status-badge">${device.Status}</span>
+                    </div>
+                    <p class="card-text text-muted small">
+                        <strong>Model:</strong> ${device.DeviceModel}<br>
+                        <strong>ID:</strong> ${device.DeviceID}<br>
+                        <strong>Code:</strong> <span class="registration-code">${device.RegistrationCode}</span>
+                    </p>
+                    ${device.EmployeeID ? `<p class="text-success small"><i class="fas fa-user"></i> ${device.EmployeeID}</p>` : ''}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            ${device.RegisteredAt ? new Date(device.RegisteredAt).toLocaleDateString() : 'Unknown'}
+                        </small>
+                        ${device.BatteryLevel ? `<span class="badge bg-info">${device.BatteryLevel}%</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Update statistics
+function updateStatistics(devices) {
+    const total = devices.length;
+    const pending = devices.filter(d => d.Status === 'registered_pending_binding').length;
+    const active = devices.filter(d => d.Status === 'bound_to_employee').length;
+    const online = devices.filter(d => d.LastSeen && new Date(d.LastSeen) > new Date(Date.now() - 5 * 60 * 1000)).length;
+    
+    document.getElementById('totalDevices').textContent = total;
+    document.getElementById('pendingDevices').textContent = pending;
+    document.getElementById('activeDevices').textContent = active;
+    document.getElementById('onlineDevices').textContent = online;
+}
+
+// Get status badge class
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case 'registered_pending_binding': return 'bg-warning';
+        case 'bound_to_employee': return 'bg-success';
+        case 'suspended': return 'bg-secondary';
+        case 'deactivated': return 'bg-danger';
+        default: return 'bg-secondary';
+    }
+}
+
+// Show message modal
+function showMessage(title, message, type) {
+    document.getElementById('messageModalTitle').textContent = title;
+    document.getElementById('messageModalBody').innerHTML = message;
+    
+    const modal = document.getElementById('messageModal');
+    const modalElement = new bootstrap.Modal(modal);
+    modalElement.show();
+}
+</script>
+
+</body>
+</html>

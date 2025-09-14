@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- This is safe for this app as we don't backup sensitive attendance data -->
+        <include domain="sharedpref" path="app_preferences.xml"/>
+        <exclude domain="sharedpref" path="sensitive_data.xml"/>
+    </cloud-backup>
+    <device-transfer>
+        <!-- Include user preferences but exclude sensitive data -->
+        <include domain="sharedpref" path="app_preferences.xml"/>
+        <exclude domain="database"/>
+        <exclude domain="sharedpref" path="auth_tokens.xml"/>
+    </device-transfer>
+</data-extraction-rules>

@@ -13,7 +13,17 @@
 //     exit(json_encode(['error' => 'Database connection failed: ' . $e->getMessage()]));
 // }
 include 'db.php';
+require_once 'SignSyncSMSService.php';
+require_once 'sms_config.php';
 date_default_timezone_set('UTC'); // Set a consistent timezone, e.g., UTC
+
+// Initialize SMS service
+try {
+    $smsService = createSMSService($conn);
+} catch (Exception $e) {
+    error_log("SMS Service initialization failed: " . $e->getMessage());
+    $smsService = null;
+}
 
 // Set content type for JSON response
 header('Content-Type: application/json');
@@ -329,19 +339,32 @@ if ($openRecord) {
 
 // --- 10. SEND SMS NOTIFICATION ---
 $phone = $emp['PhoneNumber'];
-if (!empty($phone)) {
-    // Format for Ghanaian numbers: convert 0XXXXXXXXX to 233XXXXXXXXX
-    if (preg_match('/^0\d{9}$/', $phone)) {
-        $phone = '233' . substr($phone, 1);
+if (!empty($phone) && $smsService) {
+    try {
+        $branchName = $matchedBranch['BranchName'] ?? 'the branch';
+        
+        // Prepare template data
+        $templateData = [
+            'name' => $emp['FullName'],
+            'branch' => $branchName,
+            'time' => $now,
+            'status' => $status,
+            'employee_id' => $employee_id
+        ];
+        
+        // Choose template based on action
+        $templateName = $action === 'clockin' ? 'attendance_clockin' : 'attendance_clockout';
+        
+        // Send SMS using template
+        $smsService->sendTemplateMessage($templateName, $phone, $templateData, SignSyncSMSService::PRIORITY_NORMAL);
+        
+        // Log success
+        error_log("SMS sent successfully to $phone for $action");
+        
+    } catch (Exception $e) {
+        // Log error but don't fail the attendance operation
+        error_log("SMS sending failed for $phone: " . $e->getMessage());
     }
-
-    $branchName = $matchedBranch['BranchName'] ?? 'the branch';
-    $message = "Hi {$emp['FullName']}, your {$action} at {$branchName} was successful at {$now}. Status: {$status}.";
-
-    // Use the corrected SMSOnlineGH function
-    // The sendSMSOnlineGH function expects an array of strings for destinations,
-    // so we pass the formatted phone number directly in an array.
-    @sendSMSOnlineGH($message, [$phone]);
 }
 
 // --- FINAL SUCCESS RESPONSE ---

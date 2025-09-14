@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amantin Attendance"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Employee Status Section -->
+        <TextView
+            android:id="@+id/tvEmployeeStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device not registered"
+            android:textSize="12sp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:padding="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <Button
+                android:id="@+id/btnClockIn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Clock In"
+                android:background="@android:color/holo_green_light"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:padding="8dp"
+                android:layout_marginEnd="4dp"
+                android:enabled="false" />
+
+            <Button
+                android:id="@+id/btnClockOut"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Clock Out"
+                android:background="@android:color/holo_red_light"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:padding="8dp"
+                android:layout_marginStart="4dp"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <!-- Shift Information -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shift Information"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+        
+        <TextView
+            android:id="@+id/tvShiftInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No shift information"
+            android:textSize="10sp"
+            android:background="@android:color/background_light"
+            android:padding="6dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Health Status -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Health Status"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+        
+        <TextView
+            android:id="@+id/tvHealthStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Health service not available"
+            android:textSize="10sp"
+            android:background="@android:color/background_light"
+            android:padding="6dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Location Status -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location Status"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+        
+        <TextView
+            android:id="@+id/tvLocationStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location service not available"
+            android:textSize="10sp"
+            android:background="@android:color/background_light"
+            android:padding="6dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Management Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <Button
+                android:id="@+id/btnRegisterDevice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Register"
+                android:background="@android:color/holo_blue_light"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:padding="8dp"
+                android:layout_marginEnd="2dp" />
+
+            <Button
+                android:id="@+id/btnViewStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Refresh"
+                android:background="@android:color/holo_orange_light"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:padding="8dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp" />
+                
+            <Button
+                android:id="@+id/btnHistory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="History"
+                android:background="@android:color/holo_purple"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:padding="8dp"
+                android:layout_marginStart="2dp" />
+
+        </LinearLayout>
+        
+        <!-- Camera Verification Button -->
+        <Button
+            android:id="@+id/btnCameraCapture"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Capture Verification Photo"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:padding="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>
