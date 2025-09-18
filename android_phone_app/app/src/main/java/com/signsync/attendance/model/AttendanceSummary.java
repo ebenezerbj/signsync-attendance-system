@@ -334,4 +334,21 @@ public class AttendanceSummary implements Parcelable {
                 ", totalHours=" + totalHours +
                 '}';
     }
+    
+    // Convenience methods for adapters
+    public String getDate() {
+        return attendanceDate;
+    }
+    
+    public String getClockInTime() {
+        return clockIn;
+    }
+    
+    public String getClockOutTime() {
+        return clockOut;
+    }
+    
+    public String getHoursWorked() {
+        return String.format(java.util.Locale.getDefault(), "%.1f", totalHours);
+    }
 }

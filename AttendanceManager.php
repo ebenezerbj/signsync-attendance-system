@@ -59,8 +59,9 @@ class AttendanceManager {
                 $locationData['verification_type'] = 'clock_in';
                 $locationResult = $this->locationManager->verifyLocation($locationData, $employee['BranchID']);
                 
-                // Check if location verification meets requirements
-                if ($this->config['require_location_verification']) {
+                // Check if location verification meets requirements (unless bypassed for testing)
+                $bypassLocationVerification = $additionalData['bypass_location_verification'] ?? false;
+                if ($this->config['require_location_verification'] && !$bypassLocationVerification) {
                     if ($locationResult['verification_score'] < $this->config['min_location_score']) {
                         return [
                             'success' => false,
@@ -68,6 +69,12 @@ class AttendanceManager {
                             'location_details' => $locationResult
                         ];
                     }
+                } elseif ($bypassLocationVerification) {
+                    // Override location result for bypass mode
+                    $locationResult['at_workplace'] = true;
+                    $locationResult['verification_score'] = 100;
+                    $locationResult['verified'] = true;
+                    $locationResult['bypass_mode'] = true;
                 }
             } else {
                 $locationResult = ['at_workplace' => false, 'verification_score' => 0, 'distance_from_workplace' => null];
@@ -136,6 +143,15 @@ class AttendanceManager {
                 $locationData['employee_id'] = $employeeId;
                 $locationData['verification_type'] = 'clock_out';
                 $locationResult = $this->locationManager->verifyLocation($locationData, $employee['BranchID']);
+                
+                // Apply bypass mode if specified
+                $bypassLocationVerification = $additionalData['bypass_location_verification'] ?? false;
+                if ($bypassLocationVerification) {
+                    $locationResult['at_workplace'] = true;
+                    $locationResult['verification_score'] = 100;
+                    $locationResult['verified'] = true;
+                    $locationResult['bypass_mode'] = true;
+                }
             } else {
                 $locationResult = ['at_workplace' => false, 'verification_score' => 0, 'distance_from_workplace' => null];
             }

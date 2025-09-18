@@ -36,6 +36,8 @@ import com.signsync.attendance.R;
 import com.signsync.attendance.model.ClockInOutResponse;
 import com.signsync.attendance.network.ApiClient;
 import com.signsync.attendance.network.AttendanceApiService;
+import com.signsync.attendance.service.WiFiScannerService;
+import com.signsync.attendance.service.BeaconScannerService;
 
 import java.io.ByteArrayOutputStream;
 
@@ -69,6 +71,12 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private AttendanceApiService apiService;
     
+    // Office verification services
+    private WiFiScannerService wifiScanner;
+    private BeaconScannerService beaconScanner;
+    private String wifiNetworksJson = "[]";
+    private String beaconDataJson = "[]";
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +94,11 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
         // Initialize location client and API service
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         apiService = ApiClient.getRetrofitInstance().create(AttendanceApiService.class);
+        
+        // Initialize office verification services
+        wifiScanner = new WiFiScannerService(this);
+        beaconScanner = new BeaconScannerService(this);
+        setupScannerListeners();
         
         initializeViews();
         setupClickListeners();
@@ -181,6 +194,38 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
         }
     }
     
+    private void setupScannerListeners() {
+        // WiFi scanner listener
+        wifiScanner.setWiFiScanListener(new WiFiScannerService.WiFiScanListener() {
+            @Override
+            public void onWiFiScanCompleted(java.util.List<WiFiScannerService.WiFiNetwork> networks, String networksJson) {
+                wifiNetworksJson = networksJson;
+                Log.d(TAG, "WiFi scan completed: " + networks.size() + " networks found");
+            }
+            
+            @Override
+            public void onWiFiScanFailed(String error) {
+                Log.e(TAG, "WiFi scan failed: " + error);
+                wifiNetworksJson = "[]";
+            }
+        });
+        
+        // Beacon scanner listener
+        beaconScanner.setBeaconScanListener(new BeaconScannerService.BeaconScanListener() {
+            @Override
+            public void onBeaconScanCompleted(java.util.List<BeaconScannerService.BeaconData> beacons, String beaconsJson) {
+                beaconDataJson = beaconsJson;
+                Log.d(TAG, "Beacon scan completed: " + beacons.size() + " beacons found");
+            }
+            
+            @Override
+            public void onBeaconScanFailed(String error) {
+                Log.e(TAG, "Beacon scan failed: " + error);
+                beaconDataJson = "[]";
+            }
+        });
+    }
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -239,32 +284,99 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
         // Disable buttons to prevent multiple clicks
         clockInButton.setEnabled(false);
         clockOutButton.setEnabled(false);
-        statusText.setText("Processing " + action.replace("_", " ") + "...");
+        statusText.setText("Scanning for office verification...");
         
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        performClockAction(action, location.getLatitude(), location.getLongitude());
-                    } else {
+        // Start WiFi and Beacon scanning first
+        startOfficeVerificationScans(action);
+    }
+    
+    private void startOfficeVerificationScans(String action) {
+        // Reset scan results
+        wifiNetworksJson = "[]";
+        beaconDataJson = "[]";
+        
+        // Track completion of both scans
+        final boolean[] wifiCompleted = {false};
+        final boolean[] beaconCompleted = {false};
+        
+        // Check when both scans are complete
+        Runnable checkCompletion = () -> {
+            if (wifiCompleted[0] && beaconCompleted[0]) {
+                statusText.setText("Getting location...");
+                fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            performClockAction(action, location.getLatitude(), location.getLongitude());
+                        } else {
+                            performClockAction(action, 0.0, 0.0);
+                        }
+                    })
+                    .addOnFailureListener(this, e -> {
+                        Log.e(TAG, "Error getting location", e);
                         performClockAction(action, 0.0, 0.0);
-                    }
-                })
-                .addOnFailureListener(this, e -> {
-                    Log.e(TAG, "Error getting location", e);
-                    performClockAction(action, 0.0, 0.0);
-                });
+                    });
+            }
+        };
+        
+        // Start WiFi scan
+        wifiScanner.setWiFiScanListener(new WiFiScannerService.WiFiScanListener() {
+            @Override
+            public void onWiFiScanCompleted(java.util.List<WiFiScannerService.WiFiNetwork> networks, String networksJson) {
+                wifiNetworksJson = networksJson;
+                wifiCompleted[0] = true;
+                Log.d(TAG, "WiFi scan completed: " + networks.size() + " networks found");
+                runOnUiThread(checkCompletion);
+            }
+            
+            @Override
+            public void onWiFiScanFailed(String error) {
+                Log.e(TAG, "WiFi scan failed: " + error);
+                wifiNetworksJson = "[]";
+                wifiCompleted[0] = true;
+                runOnUiThread(checkCompletion);
+            }
+        });
+        
+        // Start Beacon scan
+        beaconScanner.setBeaconScanListener(new BeaconScannerService.BeaconScanListener() {
+            @Override
+            public void onBeaconScanCompleted(java.util.List<BeaconScannerService.BeaconData> beacons, String beaconsJson) {
+                beaconDataJson = beaconsJson;
+                beaconCompleted[0] = true;
+                Log.d(TAG, "Beacon scan completed: " + beacons.size() + " beacons found");
+                runOnUiThread(checkCompletion);
+            }
+            
+            @Override
+            public void onBeaconScanFailed(String error) {
+                Log.e(TAG, "Beacon scan failed: " + error);
+                beaconDataJson = "[]";
+                beaconCompleted[0] = true;
+                runOnUiThread(checkCompletion);
+            }
+        });
+        
+        // Start both scans
+        wifiScanner.startWiFiScan();
+        beaconScanner.startBeaconScan();
     }
     
     private void performClockAction(String action, double latitude, double longitude) {
         String employeeId = sharedPreferences.getString(KEY_EMPLOYEE_ID, "");
         String reason = reasonField.getText().toString().trim();
         
+        statusText.setText("Submitting " + action.replace("_", " ") + " with verification data...");
+        
         Call<ClockInOutResponse> call;
         if ("clock_in".equals(action)) {
-            call = apiService.enhancedClockIn(employeeId, action, latitude, longitude, currentPhotoBase64, reason);
+            call = apiService.enhancedClockIn(employeeId, action, latitude, longitude, 
+                currentPhotoBase64, reason, wifiNetworksJson, beaconDataJson);
         } else {
-            call = apiService.enhancedClockOut(employeeId, action, latitude, longitude, currentPhotoBase64, reason);
+            call = apiService.enhancedClockOut(employeeId, action, latitude, longitude, 
+                currentPhotoBase64, reason, wifiNetworksJson, beaconDataJson);
         }
+        
+        Log.d(TAG, "Submitting " + action + " with WiFi: " + wifiNetworksJson.length() + " chars, Beacons: " + beaconDataJson.length() + " chars");
         
         call.enqueue(new Callback<ClockInOutResponse>() {
             @Override
@@ -374,18 +486,26 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
     }
     
     private void showAttendanceView() {
-        Toast.makeText(this, "Attendance view - Coming soon!", Toast.LENGTH_SHORT).show();
+        String employeeId = sharedPreferences.getString(KEY_EMPLOYEE_ID, "");
+        Intent intent = new Intent(this, AttendanceHistoryActivity.class);
+        intent.putExtra("employee_id", employeeId);
+        startActivity(intent);
     }
     
     private void showProfile() {
-        Toast.makeText(this, "Employee profile - Coming soon!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, EmployeeProfileActivity.class);
+        startActivity(intent);
     }
     
     private void requestPermissions() {
         String[] permissions = {
             Manifest.permission.CAMERA,
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
         };
         
         boolean needsPermission = false;
@@ -421,6 +541,19 @@ public class EnhancedEmployeePortalActivity extends AppCompatActivity {
                 Toast.makeText(this, "Some permissions denied. App may not work properly.", 
                     Toast.LENGTH_LONG).show();
             }
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        
+        // Cleanup scanners
+        if (wifiScanner != null) {
+            wifiScanner.cleanup();
+        }
+        if (beaconScanner != null) {
+            beaconScanner.cleanup();
         }
     }
 }

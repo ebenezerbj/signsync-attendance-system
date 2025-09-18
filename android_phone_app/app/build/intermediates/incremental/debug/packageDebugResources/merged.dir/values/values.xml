@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="http://schemas.android.com/tools">
     <color name="accent_color">#FFFF4081</color>
+    <color name="background_color">#FFF5F5F5</color>
     <color name="background_dark">#FF121212</color>
     <color name="background_light">#FFF5F5F5</color>
     <color name="black">#FF000000</color>
+    <color name="colorAccent">@color/accent_color</color>
+    <color name="colorError">@color/error_color</color>
+    <color name="colorPrimary">@color/primary_color</color>
+    <color name="colorPrimaryDark">@color/primary_dark</color>
     <color name="error_color">#FFF44336</color>
     <color name="error_red">@color/error_color</color>
     <color name="info_color">#FF2196F3</color>

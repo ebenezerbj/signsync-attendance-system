@@ -6,6 +6,10 @@ public class ReportSummary {
     private String details;
     private String trendDirection; // "up", "down", "stable"
     private int iconResource;
+    // Optional UI fields
+    private String dateText;
+    private String countText;
+    private String statusText;
     
     public ReportSummary() {}
     
@@ -62,5 +66,29 @@ public class ReportSummary {
     
     public void setIconResource(int iconResource) {
         this.iconResource = iconResource;
+    }
+
+    public String getDateText() {
+        return dateText;
+    }
+
+    public void setDateText(String dateText) {
+        this.dateText = dateText;
+    }
+
+    public String getCountText() {
+        return countText;
+    }
+
+    public void setCountText(String countText) {
+        this.countText = countText;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
     }
 }

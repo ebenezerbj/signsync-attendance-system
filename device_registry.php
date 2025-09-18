@@ -34,6 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
         // Validate identifier format based on device type
         switch($deviceType) {
+            case 'android':
+                // Android Device ID (can be IMEI, Android ID, or custom ID)
+                if (!preg_match('/^[A-Za-z0-9]{8,20}$/', $identifier)) {
+                    $errors[] = 'Android devices require IMEI, Android ID, or custom identifier (8-20 alphanumeric characters)';
+                }
+                break;
             case 'wifi':
                 if (!preg_match('/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/', $identifier)) {
                     $errors[] = 'WiFi devices require MAC address format (XX:XX:XX:XX:XX:XX)';
@@ -506,6 +512,7 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
                                 <label for="device_type" class="form-label">Device Type *</label>
                                 <select class="form-select" id="device_type" name="device_type" required onchange="updateIdentifierPlaceholder()">
                                     <option value="">Select Type</option>
+                                    <option value="android">Android Phone</option>
                                     <option value="wifi">WiFi Access Point</option>
                                     <option value="bluetooth">Bluetooth Device</option>
                                     <option value="beacon">BLE Beacon</option>
@@ -576,6 +583,10 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
             const helpText = document.getElementById('identifier_help');
             
             switch(deviceType) {
+                case 'android':
+                    identifierInput.placeholder = 'IMEI or Android ID';
+                    helpText.textContent = 'IMEI number, Android ID, or custom identifier (8-20 alphanumeric characters)';
+                    break;
                 case 'wifi':
                 case 'bluetooth':
                     identifierInput.placeholder = 'XX:XX:XX:XX:XX:XX';
@@ -656,6 +667,7 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
 <?php
 function getDeviceIcon($type) {
     switch($type) {
+        case 'android': return 'phone';
         case 'wifi': return 'wifi';
         case 'bluetooth': return 'bluetooth';
         case 'beacon': return 'broadcast';
@@ -669,6 +681,7 @@ function getDeviceIcon($type) {
 
 function getDeviceColor($type) {
     switch($type) {
+        case 'android': return 'success';
         case 'wifi': return 'info';
         case 'bluetooth': return 'primary';
         case 'beacon': return 'success';

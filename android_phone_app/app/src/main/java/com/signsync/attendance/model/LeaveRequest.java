@@ -369,4 +369,17 @@ public class LeaveRequest implements Parcelable {
                 ", daysRequested=" + daysRequested +
                 '}';
     }
+    
+    // Convenience methods for adapters
+    public String getType() {
+        return leaveType;
+    }
+    
+    public String getFromDate() {
+        return startDate;
+    }
+    
+    public String getToDate() {
+        return endDate;
+    }
 }

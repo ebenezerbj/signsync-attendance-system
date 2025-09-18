@@ -23,6 +23,7 @@ import com.google.android.gms.location.LocationServices;
 import com.signsync.attendance.R;
 import com.signsync.attendance.model.AttendanceRecord;
 import com.signsync.attendance.model.ClockInOutResponse;
+import com.signsync.attendance.network.response.AttendanceResponse;
 import com.signsync.attendance.network.ApiClient;
 import com.signsync.attendance.network.AttendanceApiService;
 
@@ -176,28 +177,29 @@ public class SimpleEmployeePortalActivity extends AppCompatActivity {
     private void performClockIn(double latitude, double longitude) {
         String employeeId = sharedPreferences.getString(KEY_EMPLOYEE_ID, "");
         
-        Call<ClockInOutResponse> call = apiService.clockIn(
+    Call<AttendanceResponse> call = apiService.clockIn(
                 employeeId, 
                 "clock_in", 
                 latitude, 
                 longitude, 
-                1 // Default branch ID
+                "", // snapshot - empty for now
+                "" // reason - empty for now
         );
         
-        call.enqueue(new Callback<ClockInOutResponse>() {
+    call.enqueue(new Callback<AttendanceResponse>() {
             @Override
-            public void onResponse(Call<ClockInOutResponse> call, Response<ClockInOutResponse> response) {
+        public void onResponse(Call<AttendanceResponse> call, Response<AttendanceResponse> response) {
                 clockInButton.setEnabled(true);
                 
                 if (response.isSuccessful() && response.body() != null) {
-                    ClockInOutResponse clockResponse = response.body();
-                    if (clockResponse.isSuccess()) {
+            AttendanceResponse clockResponse = response.body();
+            if (clockResponse.isSuccess()) {
                         isClockedIn = true;
                         clockInButton.setEnabled(false);
                         clockOutButton.setEnabled(true);
                         Toast.makeText(SimpleEmployeePortalActivity.this, 
-                                clockResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "Clock in successful: " + clockResponse.getMessage());
+                clockResponse.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Clock in successful: " + clockResponse.getMessage());
                     } else {
                         Toast.makeText(SimpleEmployeePortalActivity.this, 
                                 "Clock in failed: " + clockResponse.getMessage(), Toast.LENGTH_LONG).show();
@@ -211,7 +213,7 @@ public class SimpleEmployeePortalActivity extends AppCompatActivity {
             }
             
             @Override
-            public void onFailure(Call<ClockInOutResponse> call, Throwable t) {
+        public void onFailure(Call<AttendanceResponse> call, Throwable t) {
                 clockInButton.setEnabled(true);
                 Toast.makeText(SimpleEmployeePortalActivity.this, 
                         "Clock in failed: Network error", Toast.LENGTH_SHORT).show();

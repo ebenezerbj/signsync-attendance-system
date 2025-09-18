@@ -18,6 +18,12 @@
     <color name="success_color">#FF4CAF50</color>
     <color name="warning_color">#FFFF9800</color>
     <color name="error_color">#FFF44336</color>
+    
+    <!-- Color Aliases for Compatibility -->
+    <color name="colorPrimary">@color/primary_color</color>
+    <color name="colorPrimaryDark">@color/primary_dark</color>
+    <color name="colorAccent">@color/accent_color</color>
+    <color name="colorError">@color/error_color</color>
     <color name="info_color">#FF2196F3</color>
     
     <!-- Enhanced UI Colors -->
@@ -28,6 +34,7 @@
     <color name="text_secondary">#FF757575</color>
     
     <!-- Background Colors -->
+    <color name="background_color">#FFF5F5F5</color>
     <color name="background_dark">#FF121212</color>
     <color name="surface_color">#FFFFFFFF</color>
     <color name="surface_variant">#FFF5F5F5</color>

@@ -23,32 +23,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             // Start transaction
             $conn->beginTransaction();
             
-            // Deactivate any existing assignments for this employee
-            $deactivateStmt = $conn->prepare("
-                UPDATE tbl_employee_wearables 
-                SET IsActive = 0 
-                WHERE EmployeeID = ?
+            // First, check if this exact assignment already exists and is active
+            $checkStmt = $conn->prepare("
+                SELECT WearableID FROM tbl_employee_wearables 
+                WHERE EmployeeID = ? AND DeviceID = ? AND IsActive = 1
             ");
-            $deactivateStmt->execute([$employeeId]);
+            $checkStmt->execute([$employeeId, $deviceId]);
             
-            // Deactivate any existing assignments for this device
-            $deactivateDeviceStmt = $conn->prepare("
-                UPDATE tbl_employee_wearables 
-                SET IsActive = 0 
-                WHERE DeviceID = ?
-            ");
-            $deactivateDeviceStmt->execute([$deviceId]);
-            
-            // Create new assignment
-            $assignStmt = $conn->prepare("
-                INSERT INTO tbl_employee_wearables (EmployeeID, DeviceID, IsActive)
-                VALUES (?, ?, 1)
-            ");
-            $assignStmt->execute([$employeeId, $deviceId]);
-            
-            $conn->commit();
-            $message = "Wearable device assigned successfully!";
-            $messageType = "success";
+            if ($checkStmt->rowCount() > 0) {
+                $conn->rollback();
+                $message = "This device is already assigned to this employee.";
+                $messageType = "warning";
+            } else {
+                // Deactivate any existing assignments for this employee
+                $deactivateStmt = $conn->prepare("
+                    UPDATE tbl_employee_wearables 
+                    SET IsActive = 0 
+                    WHERE EmployeeID = ? AND IsActive = 1
+                ");
+                $deactivateStmt->execute([$employeeId]);
+                
+                // Deactivate any existing assignments for this device
+                $deactivateDeviceStmt = $conn->prepare("
+                    UPDATE tbl_employee_wearables 
+                    SET IsActive = 0 
+                    WHERE DeviceID = ? AND IsActive = 1
+                ");
+                $deactivateDeviceStmt->execute([$deviceId]);
+                
+                // Create new assignment
+                $assignStmt = $conn->prepare("
+                    INSERT INTO tbl_employee_wearables (EmployeeID, DeviceID, IsActive, AssignedDate)
+                    VALUES (?, ?, 1, NOW())
+                ");
+                $assignStmt->execute([$employeeId, $deviceId]);
+                
+                $conn->commit();
+                $message = "Device assigned successfully!";
+                $messageType = "success";
+            }
             
         } catch (Exception $e) {
             $conn->rollback();
@@ -61,18 +74,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $wearableId = $_POST['wearable_id'];
         
         try {
-            $unassignStmt = $conn->prepare("
-                UPDATE tbl_employee_wearables 
-                SET IsActive = 0 
-                WHERE WearableID = ?
+            // Check if the assignment exists and is active
+            $checkStmt = $conn->prepare("
+                SELECT WearableID, EmployeeID, DeviceID FROM tbl_employee_wearables 
+                WHERE WearableID = ? AND IsActive = 1
             ");
-            $unassignStmt->execute([$wearableId]);
+            $checkStmt->execute([$wearableId]);
             
-            $message = "Wearable device unassigned successfully!";
-            $messageType = "success";
+            if ($checkStmt->rowCount() === 0) {
+                $message = "Assignment not found or already inactive.";
+                $messageType = "warning";
+            } else {
+                // Update the assignment to inactive
+                $unassignStmt = $conn->prepare("
+                    UPDATE tbl_employee_wearables 
+                    SET IsActive = 0 
+                    WHERE WearableID = ? AND IsActive = 1
+                ");
+                $unassignStmt->execute([$wearableId]);
+                
+                if ($unassignStmt->rowCount() > 0) {
+                    $message = "Device unassigned successfully!";
+                    $messageType = "success";
+                } else {
+                    $message = "Assignment was already inactive.";
+                    $messageType = "info";
+                }
+            }
             
         } catch (Exception $e) {
-            $message = "Error unassigning wearable: " . $e->getMessage();
+            $message = "Error unassigning device: " . $e->getMessage();
             $messageType = "danger";
         }
     }
@@ -80,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // Get current assignments
 $currentAssignments = $conn->query("
-    SELECT ew.*, e.FullName, dept.DepartmentName as Department, d.DeviceName, d.Identifier, d.Manufacturer, d.Model,
+    SELECT ew.*, e.FullName, dept.DepartmentName as Department, d.DeviceName, d.Identifier, d.Manufacturer, d.Model, d.DeviceType,
            DATE(ew.AssignedDate) as AssignedDate
     FROM tbl_employee_wearables ew
     JOIN tbl_employees e ON ew.EmployeeID = e.EmployeeID
@@ -100,13 +131,13 @@ $availableEmployees = $conn->query("
     ORDER BY e.FullName
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Get available wearable devices (IoT devices not currently assigned)
+// Get available wearable devices (IoT devices and Android phones not currently assigned)
 $availableDevices = $conn->query("
-    SELECT d.DeviceID, d.DeviceName, d.Identifier, d.Manufacturer, d.Model, d.Location
+    SELECT d.DeviceID, d.DeviceName, d.Identifier, d.Manufacturer, d.Model, d.Location, d.DeviceType
     FROM tbl_devices d
     LEFT JOIN tbl_employee_wearables ew ON d.DeviceID = ew.DeviceID AND ew.IsActive = 1
-    WHERE d.DeviceType = 'iot' AND d.IsActive = 1 AND ew.DeviceID IS NULL
-    ORDER BY d.DeviceName
+    WHERE d.DeviceType IN ('iot', 'android') AND d.IsActive = 1 AND ew.DeviceID IS NULL
+    ORDER BY d.DeviceType, d.DeviceName
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 // Get all employees for reassignment
@@ -121,7 +152,7 @@ $allEmployees = $conn->query("
 $stats = $conn->query("
     SELECT 
         (SELECT COUNT(*) FROM tbl_employee_wearables WHERE IsActive = 1) as active_assignments,
-        (SELECT COUNT(*) FROM tbl_devices WHERE DeviceType = 'iot' AND IsActive = 1) as total_wearables,
+        (SELECT COUNT(*) FROM tbl_devices WHERE DeviceType IN ('iot', 'android') AND IsActive = 1) as total_wearables,
         (SELECT COUNT(*) FROM tbl_employees) as total_employees
 ")->fetch(PDO::FETCH_ASSOC);
 
@@ -132,7 +163,7 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wearable Device Assignment Management</title>
+    <title>Device Assignment Management - Android & Wearables</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -162,8 +193,8 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="mb-1"><i class="bi bi-smartwatch text-primary me-2"></i>Wearable Device Assignments</h2>
-                <p class="text-muted mb-0">Manage IoT wearable device assignments for employee wellness monitoring</p>
+                <h2 class="mb-1"><i class="bi bi-phone text-primary me-2"></i>Device Assignments</h2>
+                <p class="text-muted mb-0">Manage Android phone & wearable device assignments for employee monitoring</p>
             </div>
             <div>
                 <a href="admin_dashboard.php" class="btn btn-outline-secondary me-2">
@@ -205,9 +236,9 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
                 <div class="card stats-card devices shadow-sm border-0 h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-smartwatch display-6 text-success me-3"></i>
+                            <i class="bi bi-phone display-6 text-success me-3"></i>
                             <div>
-                                <p class="mb-0 text-muted small">Available Wearables</p>
+                                <p class="mb-0 text-muted small">Available Devices</p>
                                 <h3 class="mb-0"><?= count($availableDevices) ?></h3>
                                 <small class="text-muted">of <?= $stats['total_wearables'] ?> total</small>
                             </div>
@@ -289,11 +320,12 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="device_id" class="form-label">Wearable Device</label>
+                                    <label for="device_id" class="form-label">Device</label>
                                     <select name="device_id" id="device_id" class="form-select" required>
                                         <option value="">Select Device...</option>
                                         <?php foreach ($availableDevices as $device): ?>
                                         <option value="<?= $device['DeviceID'] ?>">
+                                            <?= $device['DeviceType'] === 'android' ? '📱' : '⌚' ?> 
                                             <?= htmlspecialchars($device['DeviceName']) ?>
                                             <?php if ($device['Manufacturer']): ?>
                                                 (<?= htmlspecialchars($device['Manufacturer']) ?> <?= htmlspecialchars($device['Model']) ?>)
@@ -304,7 +336,7 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
                                     <div class="form-text">
                                         <small class="text-muted">
                                             <i class="bi bi-info-circle"></i> 
-                                            Only unassigned IoT devices are shown
+                                            Only unassigned devices (Android phones & IoT wearables) are shown
                                         </small>
                                     </div>
                                 </div>
@@ -368,14 +400,24 @@ $assignmentRate = $stats['total_employees'] > 0 ? round(($stats['active_assignme
                                                 <span class="badge bg-secondary"><?= htmlspecialchars($assignment['Department'] ?? 'No Dept') ?></span>
                                             </td>
                                             <td>
-                                                <strong><?= htmlspecialchars($assignment['DeviceName']) ?></strong><br>
-                                                <small class="text-muted"><?= htmlspecialchars($assignment['Identifier']) ?></small>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="me-2">
+                                                        <?= $assignment['DeviceType'] === 'android' ? '📱' : '⌚' ?>
+                                                    </span>
+                                                    <div>
+                                                        <strong><?= htmlspecialchars($assignment['DeviceName']) ?></strong><br>
+                                                        <small class="text-muted"><?= htmlspecialchars($assignment['Identifier']) ?></small>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
-                                                <span class="device-badge badge bg-info">
-                                                    <?= htmlspecialchars($assignment['Manufacturer']) ?>
+                                                <span class="device-badge badge bg-<?= $assignment['DeviceType'] === 'android' ? 'success' : 'info' ?>">
+                                                    <?= $assignment['DeviceType'] === 'android' ? 'Android Phone' : 'IoT Device' ?>
                                                 </span><br>
-                                                <small class="text-muted"><?= htmlspecialchars($assignment['Model']) ?></small>
+                                                <small class="text-muted">
+                                                    <?= htmlspecialchars($assignment['Manufacturer']) ?> 
+                                                    <?= htmlspecialchars($assignment['Model']) ?>
+                                                </small>
                                             </td>
                                             <td>
                                                 <i class="bi bi-calendar3 text-muted"></i>

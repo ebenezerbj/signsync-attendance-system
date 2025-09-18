@@ -37,44 +37,36 @@ try {
     
     // Authenticate with PIN
     $result = $authManager->authenticateWithPIN($employee_id, $pin, $ipAddress, $userAgent);
-        
-        if ($employee) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Login successful with default PIN',
-                'is_first_login' => true,
-                'employee_id' => $employee['EmployeeID']
-            ]);
-        } else {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Invalid employee ID', 'is_first_login' => false, 'employee_id' => '']);
-        }
+    
+    if ($result['success']) {
+        // Authentication successful
+        echo json_encode([
+            'success' => true,
+            'message' => $result['message'],
+            'is_first_login' => $result['is_first_login'] ?? false,
+            'employee_id' => $employee_id,
+            'employee_data' => $result['employee_data'] ?? null
+        ]);
     } else {
-        // Check custom PIN from employee_pins table (to be created)
-        $stmt = $conn->prepare("
-            SELECT e.EmployeeID, e.FullName, e.PhoneNumber, e.BranchID 
-            FROM tbl_employees e 
-            LEFT JOIN employee_pins ep ON e.EmployeeID = ep.EmployeeID 
-            WHERE e.EmployeeID = ? AND (ep.pin = ? OR ep.pin IS NULL)
-        ");
-        $stmt->execute([$employee_id, $pin]);
-        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($employee) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Login successful',
-                'is_first_login' => false,
-                'employee_id' => $employee['EmployeeID']
-            ]);
-        } else {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Invalid employee ID or PIN', 'is_first_login' => false, 'employee_id' => '']);
-        }
+        // Authentication failed
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => $result['message'],
+            'is_first_login' => false,
+            'employee_id' => '',
+            'locked_until' => $result['locked_until'] ?? null,
+            'attempts_remaining' => $result['attempts_remaining'] ?? null
+        ]);
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     error_log("Login API error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Server error']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Server error occurred',
+        'is_first_login' => false,
+        'employee_id' => ''
+    ]);
 }
 ?>

@@ -49,6 +49,10 @@ public class GamificationData {
         return streakDays;
     }
 
+    public int getStreak() {
+        return streakDays;
+    }
+
     public void setStreakDays(int streakDays) {
         this.streakDays = streakDays;
     }

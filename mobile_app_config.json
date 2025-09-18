@@ -1,0 +1,12 @@
+{
+    "server_url": "http:\/\/172.23.80.1:8080",
+    "api_endpoints": {
+        "login": "\/login_api.php",
+        "clockinout": "\/clockinout_api.php",
+        "change_pin": "\/change_pin_api.php",
+        "employee_details": "\/employee_details_api.php",
+        "attendance_status": "\/attendance_status_api.php"
+    },
+    "connection_timeout": 30,
+    "read_timeout": 30
+}

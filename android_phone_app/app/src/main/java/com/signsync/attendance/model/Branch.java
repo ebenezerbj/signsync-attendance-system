@@ -68,6 +68,10 @@ public class Branch {
         return radius;
     }
 
+    public int getAllowedRadius() {
+        return radius;
+    }
+
     public void setRadius(int radius) {
         this.radius = radius;
     }

@@ -26,6 +26,7 @@ try {
     $longitude = isset($_POST['longitude']) ? (float)$_POST['longitude'] : null;
     $snapshot = $_POST['snapshot'] ?? '';
     $reason = $_POST['reason'] ?? '';
+    $test_mode = $_POST['test_mode'] ?? 'false';
     
     // Validate session token if provided
     if (!empty($session_token)) {
@@ -101,6 +102,12 @@ try {
         'photo_path' => $photoPath,
         'reason' => $reason
     ];
+    
+    // Add bypass mode for testing if requested
+    if ($test_mode === 'true') {
+        $additionalData['bypass_location_verification'] = true;
+        $additionalData['test_mode'] = true;
+    }
     
     if ($action === 'clock_in') {
         $result = $attendanceManager->clockIn($employee_id, $locationData, $additionalData);

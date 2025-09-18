@@ -360,6 +360,66 @@ public class Employee implements Parcelable {
                 ", isActive=" + isActive +
                 '}';
     }
+
+    // Additional convenience methods
+    public String getFullName() {
+        return name;
+    }
+
+    public void setFullName(String fullName) {
+        this.name = fullName;
+    }
+
+    public String getProfilePhotoUrl() {
+        return profilePicture;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePicture = profilePhotoUrl;
+    }
+
+    public String getProfilePhotoBase64() {
+        return profilePicture;
+    }
+
+    public void setProfilePhotoBase64(String profilePhotoBase64) {
+        this.profilePicture = profilePhotoBase64;
+    }
+
+    public String getPhoneNumber() {
+        return phone;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phone = phoneNumber;
+    }
+
+    public String getDepartmentName() {
+        return department;
+    }
+
+    public String getDateCreated() {
+        return createdAt;
+    }
+
+    public String getFormattedDateOfBirth() {
+        // Return a formatted date or placeholder if not available
+        return "Not specified";
+    }
+
+    public String getFormattedHireDate() {
+        return hireDate != null ? hireDate : "Not specified";
+    }
+
+    public String getEmploymentType() {
+        // Return employment type or default
+        return "Full-time";
+    }
+
+    public String getReportingManager() {
+        // Return reporting manager or default
+        return null;
+    }
     
     @Override
     public boolean equals(Object obj) {

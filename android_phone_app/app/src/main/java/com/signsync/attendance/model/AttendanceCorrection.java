@@ -241,6 +241,23 @@ public class AttendanceCorrection implements Parcelable {
         this.managerNotes = managerNotes;
     }
     
+    // Convenience methods for adapters
+    public String getDate() {
+        return attendanceDate;
+    }
+    
+    public String getType() {
+        return correctionType;
+    }
+    
+    public String getOriginalTime() {
+        return originalClockIn;
+    }
+    
+    public String getCorrectedTime() {
+        return requestedClockIn;
+    }
+    
     // Utility methods
     public boolean isPending() {
         return "Pending".equalsIgnoreCase(status);

@@ -1,66 +1,182 @@
 [
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_system_settings.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_system_settings.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_corrections.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_corrections.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_change_pin.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_change_pin.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_login.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_login.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_main.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_main.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_security_audit.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_security_audit.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/item_attendance_correction.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/item_attendance_correction.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_employee.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_employee.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_notification_center.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_notification_center.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_attendance_summary.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_attendance_summary.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_change_password.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_change_password.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_attendance.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_attendance.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_notification_settings.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_notification_settings.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_enhanced_employee_portal.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_enhanced_employee_portal.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_emergency_contacts.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_emergency_contacts.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_change_password.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_change_password.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_admin_panel.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_admin_panel.xml"
+        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_attendance_history.xml",
+        "source": "com.signsync.attendance.app-main-76:/layout/activity_attendance_history.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_login.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_login.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_leave_request.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_leave_request.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_simple_employee_portal.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_simple_employee_portal.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_simple_employee_portal.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_simple_employee_portal.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_schedule_management.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_schedule_management.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_notification_center.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_notification_center.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/item_attendance_summary.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/item_attendance_summary.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_settings.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_settings.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_security_audit.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_security_audit.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_main.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_enhanced_employee_portal.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/activity_enhanced_employee_portal.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\dialog_leave_request_details.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\dialog_leave_request_details.xml"
     },
     {
-        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/item_leave_request.xml",
-        "source": "com.signsync.attendance.app-main-76:/layout/item_leave_request.xml"
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_notification_settings.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_notification_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_clock_in_out.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_clock_in_out.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\dialog_attendance_details.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\dialog_attendance_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_reports.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_reports.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_leave_requests.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_leave_requests.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_system_settings.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_system_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_employee_attendance.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_employee_attendance.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\dialog_correction_details.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\dialog_correction_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_change_pin.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_change_pin.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\dialog_edit_profile.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\dialog_edit_profile.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/activity_employee_profile.xml",
+        "source": "com.signsync.attendance.app-main-76:/layout/activity_employee_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_attendance.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_attendance.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_admin_panel.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_admin_panel.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_employee_profile.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_employee_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_profile.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_schedule_management.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_schedule_management.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_employee_detail.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_employee_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_attendance_correction.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_attendance_correction.xml"
+    },
+    {
+        "merged": "com.signsync.attendance.app-mergeDebugResources-73:/layout/item_attendance_history.xml",
+        "source": "com.signsync.attendance.app-main-76:/layout/item_attendance_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_report_summary.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_report_summary.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_employee_corrections.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_employee_corrections.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_kiosk_mode.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_kiosk_mode.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_add_edit_employee.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_add_edit_employee.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_employee_dashboard.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_employee_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_employee_portal.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_employee_portal.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\item_correction.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\item_correction.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_employee_management.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_employee_management.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_emergency_contacts.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_emergency_contacts.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\fragment_employee_leave.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\fragment_employee_leave.xml"
+    },
+    {
+        "merged": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-mergeDebugResources-73:\\layout\\activity_admin.xml",
+        "source": "C:\\Users\\Ebenezerbj\\.gradle\\daemon\\8.13\\com.signsync.attendance.app-main-76:\\layout\\activity_admin.xml"
     }
 ]

@@ -222,6 +222,7 @@ if (!isset($_SESSION['user_role']) || !in_array(strtolower($_SESSION['user_role'
                             <div class="col-md-3">
                                 <select class="form-select" id="device-type-filter">
                                     <option value="">All Device Types</option>
+                                    <option value="android">Android Phones</option>
                                     <option value="wifi">WiFi Access Points</option>
                                     <option value="bluetooth">Bluetooth Devices</option>
                                     <option value="beacon">BLE Beacons</option>

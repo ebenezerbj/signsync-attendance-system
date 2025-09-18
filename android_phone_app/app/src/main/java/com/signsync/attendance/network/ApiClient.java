@@ -9,11 +9,17 @@ import java.util.concurrent.TimeUnit;
 public class ApiClient {
     // NETWORK FIX: Using real WiFi IP address instead of emulator address
     
-    // Option 1: For Android EMULATOR (AVD) - this was causing connection issues
-    // private static final String BASE_URL = "http://10.0.2.2:8080/attendance_register/";
+    // Option 1: For Android EMULATOR (AVD) - Use this for emulator testing
+    private static final String BASE_URL_EMULATOR = "http://10.0.2.2:8080/";
     
-    // Option 2: For REAL Android device on same WiFi - ACTIVE CONFIGURATION
-    private static final String BASE_URL = "http://192.168.0.189:8080/attendance_register/";
+    // Option 2: For REAL Android device on same WiFi - Replace with your actual IP
+    private static final String BASE_URL_DEVICE = "http://192.168.0.189:8080/"; // <-- your server IP
+    
+    // Option 3: For local testing - Laragon default
+    private static final String BASE_URL_LOCAL = "http://localhost:8080/";
+    
+    // ACTIVE CONFIGURATION - Change this to match your setup
+    private static final String BASE_URL = BASE_URL_DEVICE;
     
     private static Retrofit retrofit = null;
 
@@ -40,5 +46,9 @@ public class ApiClient {
 
     public static AttendanceApiService getApiService() {
         return getRetrofitInstance().create(AttendanceApiService.class);
+    }
+
+    public static Retrofit getRetrofit() {
+        return getRetrofitInstance();
     }
 }

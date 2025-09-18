@@ -94,12 +94,27 @@ class EmployeeAuthenticationManager {
             $pinValid = ($pin === $employee['CustomPIN']);
         } else {
             // Check employee_pins table
-            $stmt = $this->conn->prepare("SELECT pin FROM employee_pins WHERE EmployeeID = ?");
+            $stmt = $this->conn->prepare("SELECT pin FROM employee_pins WHERE EmployeeID = ? LIMIT 1");
             $stmt->execute([$employeeId]);
             $customPin = $stmt->fetchColumn();
             
             if ($customPin) {
-                $pinValid = password_verify($pin, $customPin);
+                // Support both hashed and legacy plain storage
+                if ($this->looksLikeHashedPin($customPin)) {
+                    $pinValid = password_verify($pin, $customPin);
+                } else {
+                    // Legacy: plain text pin stored
+                    $pinValid = hash_equals((string)$customPin, $pin);
+                }
+
+                // If PIN is not yet set up (first time user) allow default PIN as a transitional login
+                if (!$pinValid && (int)($employee['PINSetupComplete'] ?? 0) === 0) {
+                    if ($pin === $this->config['default_pin']) {
+                        $pinValid = true;
+                        $isDefaultPin = true;
+                        $requiresPinChange = true;
+                    }
+                }
             } else {
                 // Allow default PIN
                 $pinValid = ($pin === $this->config['default_pin']);
@@ -506,6 +521,17 @@ class EmployeeAuthenticationManager {
         $stmt = $this->conn->prepare("UPDATE tbl_authentication_sessions SET is_active = 0 WHERE session_token = ?");
         $stmt->execute([$sessionToken]);
         return $stmt->rowCount() > 0;
+    }
+
+    // Detect if a stored PIN value looks like a password hash (bcrypt/argon2)
+    private function looksLikeHashedPin(string $value): bool {
+        if ($value === '') return false;
+        // Bcrypt: $2y$10$...
+        if (preg_match('/^\$2y\$\d{2}\$/', $value)) return true;
+        // Argon2i/Argon2id: $argon2i$ or $argon2id$
+        if (preg_match('/^\$argon2(id|i)\$/', $value)) return true;
+        // Generic long hash heuristic
+        return strlen($value) > 50;
     }
 }
 ?>

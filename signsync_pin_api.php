@@ -1,22 +1,28 @@
 <?php
 /**
- * SIGNSYNC PIN Validation API
- * Validates Employee ID and PIN for watch attendance
+ * SIGNSYNC PIN Authentication API (Mobile)
+ * Accepts JSON or form data. Uses EmployeeAuthenticationManager for validation.
+ * Returns top-level fields compatible with Android AuthResponse.
  */
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    exit(0);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
 }
 
 include 'db.php';
+include_once 'EmployeeAuthenticationManager.php';
+// Auth configuration and logger
+$authConfig = include __DIR__ . '/config_auth.php';
+include_once __DIR__ . '/lib/AuthLogger.php';
+$logger = new AuthLogger($authConfig);
+$requestId = AuthLogger::newRequestId();
 
-// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
@@ -24,120 +30,174 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    // Get JSON input
-    $input = json_decode(file_get_contents('php://input'), true);
+    // Support both JSON and form-encoded payloads
+    $raw = file_get_contents('php://input');
+    $json = json_decode($raw, true);
     
-    if (!$input) {
-        throw new Exception('Invalid JSON input');
+    $employeeId = '';
+    $pin = '';
+    
+    if (is_array($json)) {
+        $employeeId = $json['employee_id'] ?? '';
+        $pin = $json['pin'] ?? '';
+    } else {
+        $employeeId = $_POST['employee_id'] ?? '';
+        $pin = $_POST['pin'] ?? '';
     }
     
-    // Validate required fields
-    if (!isset($input['employee_id']) || !isset($input['pin'])) {
-        throw new Exception('Employee ID and PIN are required');
+    $employeeId = trim((string)$employeeId);
+    $pin = trim((string)$pin);
+    
+    if ($employeeId === '' || $pin === '') {
+        $logger->log('warn', 'Missing credentials', [
+            'request_id' => $requestId,
+            'remote_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ]);
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Employee ID and PIN are required', 'request_id' => $requestId]);
+        exit;
     }
     
-    $employeeId = trim($input['employee_id']);
-    $pin = trim($input['pin']);
-    
-    // Validate input format
-    if (empty($employeeId) || empty($pin)) {
-        throw new Exception('Employee ID and PIN cannot be empty');
-    }
-    
-    // Query employee data
-    $stmt = $conn->prepare("
-        SELECT e.EmployeeID, e.FullName, e.DepartmentID, d.DepartmentName,
-               e.Username, e.PhoneNumber, e.BranchID, b.BranchName,
-               e.Password
-        FROM tbl_employees e
-        LEFT JOIN tbl_departments d ON e.DepartmentID = d.DepartmentID
-        LEFT JOIN tbl_branches b ON e.BranchID = b.BranchID
-        WHERE e.EmployeeID = ?
+    // Look up extra employee details for response
+    $stmt = $conn->prepare("\r
+        SELECT e.EmployeeID, e.FullName, e.DepartmentID, d.DepartmentName, e.BranchID, b.BranchName\r
+        FROM tbl_employees e\r
+        LEFT JOIN tbl_departments d ON e.DepartmentID = d.DepartmentID\r
+        LEFT JOIN tbl_branches b ON e.BranchID = b.BranchID\r
+        WHERE e.EmployeeID = ?\r
     ");
-    
     $stmt->execute([$employeeId]);
-    
-    if ($stmt->rowCount() === 0) {
-        throw new Exception('Employee not found');
-    }
-    
     $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$employee) {
+        $logger->log('info', 'Employee not found', [
+            'request_id' => $requestId,
+            'employee_id' => $employeeId,
+        ]);
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => 'Employee not found', 'request_id' => $requestId]);
+        exit;
+    }
     
-    // PIN Validation Strategy:
-    // Since there's no PIN column, we'll use a simple rule:
-    // PIN = last 4 digits of phone number (if available)
-    // OR PIN = "1234" as default for all employees
-    // OR verify against password if PIN matches password
+    // Authenticate via central manager (handles default/custom PINs and lockouts)
+    $authManager = new EmployeeAuthenticationManager($conn);
+    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '';
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $logPin = ($authConfig['mask_pin'] ?? true) ? '****' : $pin;
+    $logger->log('info', 'PIN auth request', [
+        'request_id' => $requestId,
+        'employee_id' => $employeeId,
+        'pin' => $logPin,
+        'remote_ip' => $ipAddress,
+        'user_agent' => $userAgent,
+    ]);
+
+    $result = $authManager->authenticateWithPIN($employeeId, $pin, $ipAddress, $userAgent);
     
-    $validPin = false;
-    $pinSource = '';
-    
-    // Strategy 1: Last 4 digits of phone number
-    if (!empty($employee['PhoneNumber']) && strlen($employee['PhoneNumber']) >= 4) {
-        $phonePin = substr($employee['PhoneNumber'], -4);
-        if ($pin === $phonePin) {
-            $validPin = true;
-            $pinSource = 'phone';
+    if (!$result['success']) {
+        $logger->log('warn', 'Central auth failed', [
+            'request_id' => $requestId,
+            'employee_id' => $employeeId,
+            'reason' => $result['message'] ?? 'unknown',
+            'locked' => $result['locked'] ?? false,
+        ]);
+
+        // Fallback to legacy strategies only if explicitly enabled
+        if (!($authConfig['enable_legacy_pin_fallback'] ?? false)) {
+            http_response_code(isset($result['locked']) && $result['locked'] ? 423 : 401);
+            echo json_encode([
+                'success' => false,
+                'message' => $result['message'] ?? 'Authentication failed',
+                'request_id' => $requestId,
+            ]);
+            exit;
         }
-    }
-    
-    // Strategy 2: Default PIN "1234"
-    if (!$validPin && $pin === '1234') {
-        $validPin = true;
-        $pinSource = 'default';
-    }
-    
-    // Strategy 3: Check if PIN matches the actual password
-    if (!$validPin && password_verify($pin, $employee['Password'])) {
-        $validPin = true;
-        $pinSource = 'password';
-    }
-    
-    // Strategy 4: Simple PIN based on employee ID suffix
-    if (!$validPin) {
-        // Extract numeric part from employee ID (e.g., AKCBSTF001 -> 001 -> 0001)
-        preg_match('/(\d+)$/', $employeeId, $matches);
-        if (!empty($matches[1])) {
-            $numericPart = str_pad($matches[1], 4, '0', STR_PAD_LEFT);
-            if ($pin === $numericPart) {
-                $validPin = true;
-                $pinSource = 'employee_id';
+
+        // Legacy compatibility path
+        $pinValid = false;
+        
+        // 1) Last 4 digits of phone number
+        if (!$pinValid && !empty($employee['PhoneNumber']) && strlen($employee['PhoneNumber']) >= 4) {
+            $phonePin = substr($employee['PhoneNumber'], -4);
+            if ($pin === $phonePin) { $pinValid = true; }
+        }
+        // 2) Check if PIN matches the actual password hash
+        if (!$pinValid) {
+            $pwdStmt = $conn->prepare("SELECT Password FROM tbl_employees WHERE EmployeeID = ?");
+            $pwdStmt->execute([$employeeId]);
+            $pwdRow = $pwdStmt->fetch(PDO::FETCH_ASSOC);
+            if ($pwdRow && !empty($pwdRow['Password'])) {
+                if (@password_verify($pin, $pwdRow['Password'])) { $pinValid = true; }
             }
         }
+        // 3) Employee ID suffix (last 4 digits)
+        if (!$pinValid) {
+            if (preg_match('/(\n+)$/', $employeeId) === 1) {}
+            if (preg_match('/(\d+)$/', $employeeId, $m)) {
+                $suffix = str_pad($m[1], 4, '0', STR_PAD_LEFT);
+                if ($pin === $suffix) { $pinValid = true; }
+            }
+        }
+        
+        if ($pinValid) {
+            $logger->log('info', 'Legacy PIN accepted', [
+                'request_id' => $requestId,
+                'employee_id' => $employeeId,
+            ]);
+            // Issue a session token for compatibility
+            $sessionToken = bin2hex(random_bytes(32));
+            $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+            $sessStmt = $conn->prepare("INSERT INTO tbl_authentication_sessions (employee_id, session_token, session_type, ip_address, expires_at) VALUES (?, ?, 'mobile', ?, ?)");
+            $sessStmt->execute([$employeeId, $sessionToken, $ipAddress, $expiresAt]);
+            
+            http_response_code(200);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Authentication successful',
+                'employeeName' => $employee['FullName'] ?? '',
+                'department' => $employee['DepartmentName'] ?? '',
+                'employeeId' => $employee['EmployeeID'],
+                'token' => $sessionToken,
+                'request_id' => $requestId,
+            ]);
+            exit;
+        }
+        
+        http_response_code(isset($result['locked']) && $result['locked'] ? 423 : 401);
+        echo json_encode([
+            'success' => false,
+            'message' => $result['message'] ?? 'Authentication failed',
+            'request_id' => $requestId,
+        ]);
+        exit;
     }
     
-    if (!$validPin) {
-        throw new Exception('Invalid PIN');
-    }
-    
-    // Log successful authentication
-    $logStmt = $conn->prepare("
-        INSERT INTO activity_logs (EmployeeID, ActivityType, ActivityDescription, Timestamp)
-        VALUES (?, 'PIN_AUTH', ?, NOW())
-    ");
-    $logStmt->execute([
-        $employeeId,
-        "PIN authentication successful via {$pinSource}"
+    // Success: return top-level fields expected by the app
+    http_response_code(200);
+    $logger->log('info', 'PIN auth success', [
+        'request_id' => $requestId,
+        'employee_id' => $employeeId,
     ]);
-    
-    // Return success response with employee data
+
     echo json_encode([
         'success' => true,
         'message' => 'Authentication successful',
-        'data' => [
-            'employee_id' => $employee['EmployeeID'],
-            'name' => $employee['FullName'],
-            'department' => $employee['DepartmentName'],
-            'branch' => $employee['BranchName'],
-            'pin_source' => $pinSource
-        ]
+        'employeeName' => $employee['FullName'] ?? ($result['employee_name'] ?? ''),
+        'department' => $employee['DepartmentName'] ?? '',
+        'employeeId' => $employee['EmployeeID'],
+        'token' => $result['session_token'] ?? '',
+        'request_id' => $requestId,
     ]);
     
-} catch (Exception $e) {
-    http_response_code(400);
+} catch (Throwable $e) {
+    $logger->log('error', 'PIN auth fatal error', [
+        'request_id' => $requestId ?? 'n/a',
+        'error' => $e->getMessage(),
+    ]);
+    http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => $e->getMessage()
+        'message' => 'Internal server error',
+        'request_id' => $requestId ?? 'n/a',
     ]);
 }
 ?>

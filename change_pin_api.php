@@ -14,16 +14,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $employee_id = $_POST['employee_id'] ?? '';
 $current_pin = $_POST['current_pin'] ?? '';
 $new_pin = $_POST['new_pin'] ?? '';
+$is_first_login = filter_var($_POST['is_first_login'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-if (empty($employee_id) || empty($current_pin) || empty($new_pin)) {
+if (empty($employee_id) || empty($new_pin)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'All fields are required']);
+    echo json_encode(['success' => false, 'message' => 'Employee ID and new PIN are required']);
     exit;
 }
 
-if (strlen($new_pin) < 4) {
+// Only require current PIN if not first login
+if (!$is_first_login && empty($current_pin)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'PIN must be at least 4 digits']);
+    echo json_encode(['success' => false, 'message' => 'Current PIN is required']);
+    exit;
+}
+
+if (strlen($new_pin) !== 6) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'PIN must be exactly 6 digits']);
+    exit;
+}
+
+if (!ctype_digit($new_pin)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'PIN must contain only numbers']);
     exit;
 }
 

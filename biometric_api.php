@@ -427,15 +427,22 @@ try {
             $deactivate = $conn->prepare("
                 UPDATE tbl_employee_wearables 
                 SET IsActive = 0 
-                WHERE EmployeeID = ?
+                WHERE EmployeeID = ? AND IsActive = 1
             ");
             $deactivate->execute([$employeeId]);
             
+            // Deactivate any existing assignments for this device
+            $deactivateDevice = $conn->prepare("
+                UPDATE tbl_employee_wearables 
+                SET IsActive = 0 
+                WHERE DeviceID = ? AND IsActive = 1
+            ");
+            $deactivateDevice->execute([$deviceId]);
+            
             // Create new assignment
             $assign = $conn->prepare("
-                INSERT INTO tbl_employee_wearables (EmployeeID, DeviceID, IsActive)
-                VALUES (?, ?, 1)
-                ON DUPLICATE KEY UPDATE IsActive = 1, AssignedDate = CURRENT_TIMESTAMP
+                INSERT INTO tbl_employee_wearables (EmployeeID, DeviceID, IsActive, AssignedDate)
+                VALUES (?, ?, 1, CURRENT_TIMESTAMP)
             ");
             $assign->execute([$employeeId, $deviceId]);
             
