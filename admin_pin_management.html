@@ -403,10 +403,15 @@
                                 </div>
                                 
                                 <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-success btn-sm flex-fill" 
+                                            onclick="showSetPinModal('${escapeHtml(employee.employee_id)}', '${escapeHtml(employee.name)}')"
+                                            title="Create or set PIN for employee">
+                                        <i class="bi bi-key me-1"></i>Set PIN
+                                    </button>
                                     <button class="btn btn-outline-danger btn-sm flex-fill" 
                                             onclick="resetEmployeePIN('${escapeHtml(employee.employee_id)}', '${escapeHtml(employee.name)}')"
                                             title="Reset PIN to default">
-                                        <i class="bi bi-arrow-clockwise me-1"></i>Reset PIN
+                                        <i class="bi bi-arrow-clockwise me-1"></i>Reset
                                     </button>
                                     <button class="btn btn-outline-info btn-sm flex-fill" 
                                             onclick="viewEmployeeDetails('${escapeHtml(employee.employee_id)}')"
@@ -449,6 +454,95 @@
             );
             
             displayEmployees(filtered);
+        }
+
+        function showSetPinModal(employeeId, employeeName) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('setPinModal');
+            if (existingModal) existingModal.remove();
+
+            const modalHtml = `
+                <div class="modal fade" id="setPinModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title"><i class="bi bi-key me-2"></i>Set PIN for ${escapeHtml(employeeName)}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-muted">Create or change the PIN for <strong>${escapeHtml(employeeName)}</strong> (${escapeHtml(employeeId)}).</p>
+                                <div class="mb-3">
+                                    <label for="adminNewPin" class="form-label">New PIN (4 digits)</label>
+                                    <input type="password" class="form-control form-control-lg text-center" id="adminNewPin" 
+                                           maxlength="4" pattern="\\d{4}" placeholder="Enter 4-digit PIN" 
+                                           style="letter-spacing: 0.5em; font-size: 1.5rem;">
+                                    <div class="form-text">Must be exactly 4 digits. Cannot be 1234.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="adminConfirmPin" class="form-label">Confirm PIN</label>
+                                    <input type="password" class="form-control form-control-lg text-center" id="adminConfirmPin" 
+                                           maxlength="4" pattern="\\d{4}" placeholder="Confirm PIN" 
+                                           style="letter-spacing: 0.5em; font-size: 1.5rem;">
+                                </div>
+                                <div id="setPinError" class="alert alert-danger d-none"></div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-success" onclick="submitSetPin('${escapeHtml(employeeId)}', '${escapeHtml(employeeName)}')">
+                                    <i class="bi bi-check-circle me-1"></i>Set PIN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('setPinModal'));
+            modal.show();
+            document.getElementById('adminNewPin').focus();
+        }
+
+        async function submitSetPin(employeeId, employeeName) {
+            const newPin = document.getElementById('adminNewPin').value.trim();
+            const confirmPin = document.getElementById('adminConfirmPin').value.trim();
+            const errorDiv = document.getElementById('setPinError');
+            errorDiv.classList.add('d-none');
+
+            if (!/^\d{4}$/.test(newPin)) {
+                errorDiv.textContent = 'PIN must be exactly 4 digits.';
+                errorDiv.classList.remove('d-none');
+                return;
+            }
+            if (newPin === '1234') {
+                errorDiv.textContent = 'Cannot use the default PIN (1234).';
+                errorDiv.classList.remove('d-none');
+                return;
+            }
+            if (newPin !== confirmPin) {
+                errorDiv.textContent = 'PINs do not match.';
+                errorDiv.classList.remove('d-none');
+                return;
+            }
+
+            try {
+                const response = await fetch('signsync_admin_pin_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'set_pin', employee_id: employeeId, new_pin: newPin })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('setPinModal')).hide();
+                    showAlert('success', `PIN set successfully for ${employeeName}.`);
+                    await loadEmployees();
+                } else {
+                    throw new Error(result.message || 'Failed to set PIN');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('d-none');
+            }
         }
 
         async function resetEmployeePIN(employeeId, employeeName) {
@@ -610,6 +704,9 @@ Type "RESET ALL" to confirm:`;
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-success" onclick="bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide(); showSetPinModal('${escapeHtml(employee.employee_id)}', '${escapeHtml(employee.name)}');">
+                                    <i class="bi bi-key me-1"></i>Set PIN
+                                </button>
                                 <button type="button" class="btn btn-danger" onclick="resetEmployeePIN('${escapeHtml(employee.employee_id)}', '${escapeHtml(employee.name)}'); bootstrap.Modal.getInstance(document.getElementById('employeeModal')).hide();">
                                     <i class="bi bi-arrow-clockwise me-1"></i>Reset PIN
                                 </button>

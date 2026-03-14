@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 include 'db.php';
+include_once 'EmployeeAuthenticationManager.php';
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -36,6 +37,10 @@ try {
     switch ($action) {
         case 'list_employees':
             handleListEmployees($conn);
+            break;
+            
+        case 'set_pin':
+            handleSetPin($input, $conn);
             break;
             
         case 'reset_pin':
@@ -104,6 +109,82 @@ function handleListEmployees($conn) {
 }
 
 /**
+ * Admin set/create PIN for an employee
+ */
+function handleSetPin($input, $conn) {
+    if (!isset($input['employee_id']) || !isset($input['new_pin'])) {
+        throw new Exception('Employee ID and new PIN are required');
+    }
+    
+    $employeeId = trim($input['employee_id']);
+    $newPin = trim($input['new_pin']);
+    
+    // Validate PIN format
+    if (!preg_match('/^\d{4}$/', $newPin)) {
+        throw new Exception('PIN must be exactly 4 digits');
+    }
+    
+    if ($newPin === '1234') {
+        throw new Exception('Cannot set default PIN. Choose a different PIN.');
+    }
+    
+    try {
+        // Check if employee exists
+        $checkStmt = $conn->prepare("SELECT EmployeeID, FullName FROM tbl_employees WHERE EmployeeID = ?");
+        $checkStmt->execute([$employeeId]);
+        
+        if ($checkStmt->rowCount() === 0) {
+            throw new Exception('Employee not found: ' . $employeeId);
+        }
+        
+        $employee = $checkStmt->fetch(PDO::FETCH_ASSOC);
+        
+        $conn->beginTransaction();
+        
+        // Update tbl_employees.CustomPIN
+        $stmt = $conn->prepare("UPDATE tbl_employees SET CustomPIN = ?, PINSetupComplete = 1 WHERE EmployeeID = ?");
+        $stmt->execute([$newPin, $employeeId]);
+        
+        // Update or insert into employee_pins with hashed PIN
+        $hashedPin = password_hash($newPin, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("
+            INSERT INTO employee_pins (EmployeeID, pin, updated_at) 
+            VALUES (?, ?, NOW()) 
+            ON DUPLICATE KEY UPDATE pin = VALUES(pin), updated_at = NOW()
+        ");
+        $stmt->execute([$employeeId, $hashedPin]);
+        
+        $conn->commit();
+        
+        // Log the action
+        try {
+            $logStmt = $conn->prepare("
+                INSERT INTO activity_logs (EmployeeID, ActivityType, ActivityDescription, Timestamp)
+                VALUES (?, 'PIN_SET_BY_ADMIN', 'PIN created/set by admin', NOW())
+            ");
+            $logStmt->execute([$employeeId]);
+        } catch (Exception $e) {
+            // Log error but don't fail
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'message' => 'PIN set successfully for ' . $employee['FullName'],
+            'data' => [
+                'employee_id' => $employeeId,
+                'employee_name' => $employee['FullName']
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        if ($conn->inTransaction()) {
+            $conn->rollBack();
+        }
+        throw new Exception('Failed to set PIN: ' . $e->getMessage());
+    }
+}
+
+/**
  * Reset PIN for specific employee
  */
 function handleResetPin($input, $conn) {
@@ -124,13 +205,17 @@ function handleResetPin($input, $conn) {
         
         $employee = $checkStmt->fetch(PDO::FETCH_ASSOC);
         
-        // Reset PIN
+        // Reset PIN in tbl_employees
         $resetStmt = $conn->prepare("
             UPDATE tbl_employees 
             SET CustomPIN = NULL, PINSetupComplete = 0 
             WHERE EmployeeID = ?
         ");
         $resetStmt->execute([$employeeId]);
+        
+        // Also clear employee_pins table
+        $clearPinsStmt = $conn->prepare("DELETE FROM employee_pins WHERE EmployeeID = ?");
+        $clearPinsStmt->execute([$employeeId]);
         
         // Log the reset action
         try {
@@ -166,12 +251,15 @@ function handleResetAllPins($conn) {
         $countStmt = $conn->query("SELECT COUNT(*) as count FROM tbl_employees WHERE CustomPIN IS NOT NULL");
         $count = $countStmt->fetch(PDO::FETCH_ASSOC)['count'];
         
-        // Reset all PINs
+        // Reset all PINs in tbl_employees
         $resetStmt = $conn->exec("
             UPDATE tbl_employees 
             SET CustomPIN = NULL, PINSetupComplete = 0 
             WHERE CustomPIN IS NOT NULL
         ");
+        
+        // Also clear all employee_pins records
+        $conn->exec("DELETE FROM employee_pins");
         
         // Log the bulk reset action
         try {

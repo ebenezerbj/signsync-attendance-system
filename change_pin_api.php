@@ -1,5 +1,7 @@
 <?php
 include 'db.php';
+include_once 'EmployeeAuthenticationManager.php';
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -29,15 +31,9 @@ if (!$is_first_login && empty($current_pin)) {
     exit;
 }
 
-if (strlen($new_pin) !== 6) {
+if (!preg_match('/^\d{4}$/', $new_pin)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'PIN must be exactly 6 digits']);
-    exit;
-}
-
-if (!ctype_digit($new_pin)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'PIN must contain only numbers']);
+    echo json_encode(['success' => false, 'message' => 'PIN must be exactly 4 digits']);
     exit;
 }
 
@@ -48,64 +44,23 @@ if ($new_pin === '1234') {
 }
 
 try {
-    // Verify employee exists
-    $stmt = $conn->prepare("SELECT EmployeeID FROM tbl_employees WHERE EmployeeID = ?");
-    $stmt->execute([$employee_id]);
-    if (!$stmt->fetch()) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'message' => 'Employee not found']);
-        exit;
-    }
-    
-    // Create employee_pins table if it doesn't exist
-    $conn->exec("
-        CREATE TABLE IF NOT EXISTS employee_pins (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            EmployeeID VARCHAR(50) UNIQUE NOT NULL,
-            pin VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (EmployeeID) REFERENCES tbl_employees(EmployeeID) ON DELETE CASCADE
-        )
-    ");
-    
-    // Verify current PIN
-    if ($current_pin === '1234') {
-        // First time setup from default PIN
-        $stmt = $conn->prepare("
-            INSERT INTO employee_pins (EmployeeID, pin) 
-            VALUES (?, ?) 
-            ON DUPLICATE KEY UPDATE pin = ?, updated_at = CURRENT_TIMESTAMP
-        ");
-        $stmt->execute([$employee_id, $new_pin, $new_pin]);
-        
+    $authManager = new EmployeeAuthenticationManager($conn);
+
+    // For first login, treat current PIN as the default
+    $oldPin = $is_first_login ? '1234' : $current_pin;
+
+    $result = $authManager->changePIN($employee_id, $oldPin, $new_pin);
+
+    if ($result['success']) {
         echo json_encode([
             'success' => true,
-            'message' => 'PIN changed successfully',
-            'data' => 'PIN updated from default'
+            'message' => 'PIN changed successfully'
         ]);
     } else {
-        // Verify existing PIN
-        $stmt = $conn->prepare("SELECT pin FROM employee_pins WHERE EmployeeID = ?");
-        $stmt->execute([$employee_id]);
-        $stored_pin = $stmt->fetchColumn();
-        
-        if ($stored_pin && $stored_pin === $current_pin) {
-            // Update existing PIN
-            $stmt = $conn->prepare("UPDATE employee_pins SET pin = ?, updated_at = CURRENT_TIMESTAMP WHERE EmployeeID = ?");
-            $stmt->execute([$new_pin, $employee_id]);
-            
-            echo json_encode([
-                'success' => true,
-                'message' => 'PIN changed successfully',
-                'data' => 'PIN updated'
-            ]);
-        } else {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Current PIN is incorrect']);
-        }
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $result['message']]);
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     error_log("Change PIN API error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Server error']);

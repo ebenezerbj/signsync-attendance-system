@@ -32,7 +32,8 @@ public interface AttendanceApiService {
     Call<Object> changePin(
         @Field("employee_id") String employeeId,
         @Field("current_pin") String currentPin,
-        @Field("new_pin") String newPin
+        @Field("new_pin") String newPin,
+        @Field("is_first_login") boolean isFirstLogin
     );
     
     // Fixed clockIn method to match KioskModeActivity usage (String parameters)
