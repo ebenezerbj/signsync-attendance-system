@@ -1,6 +1,8 @@
 <?php
 include 'db.php';
 include_once 'EmployeeAuthenticationManager.php';
+include_once 'SignSyncSMSService.php';
+include_once 'sms_config.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -52,6 +54,23 @@ try {
     $result = $authManager->changePIN($employee_id, $oldPin, $new_pin);
 
     if ($result['success']) {
+        // Send SMS notification
+        $smsSent = false;
+        try {
+            $stmt = $conn->prepare("SELECT FullName, PhoneNumber FROM tbl_employees WHERE EmployeeID = ?");
+            $stmt->execute([$employee_id]);
+            $emp = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($emp && !empty($emp['PhoneNumber'])) {
+                $smsService = createSMSService($conn);
+                $smsService->sendTemplateMessage('pin_changed', $emp['PhoneNumber'], [
+                    'name' => $emp['FullName']
+                ]);
+                $smsSent = true;
+            }
+        } catch (Exception $smsEx) {
+            error_log('SMS notification failed for PIN change: ' . $smsEx->getMessage());
+        }
+        
         echo json_encode([
             'success' => true,
             'message' => 'PIN changed successfully'

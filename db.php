@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'attendance_register_db';
+$dbname = 'signsync_db';
 $username = 'root';
 $password = ''; // adjust if using a password
 

@@ -16,6 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 include 'db.php';
 include_once 'EmployeeAuthenticationManager.php';
+include_once 'SignSyncSMSService.php';
+include_once 'sms_config.php';
+
+// Initialize SMS service
+$smsService = null;
+try {
+    $smsService = createSMSService($conn);
+} catch (Exception $e) {
+    error_log('SMS Service init failed: ' . $e->getMessage());
+}
 
 // Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -34,21 +44,23 @@ try {
     
     $action = $input['action'];
     
+    global $smsService;
+    
     switch ($action) {
         case 'list_employees':
             handleListEmployees($conn);
             break;
             
         case 'set_pin':
-            handleSetPin($input, $conn);
+            handleSetPin($input, $conn, $smsService);
             break;
             
         case 'reset_pin':
-            handleResetPin($input, $conn);
+            handleResetPin($input, $conn, $smsService);
             break;
             
         case 'reset_all_pins':
-            handleResetAllPins($conn);
+            handleResetAllPins($conn, $smsService);
             break;
             
         case 'employee_details':
@@ -111,7 +123,7 @@ function handleListEmployees($conn) {
 /**
  * Admin set/create PIN for an employee
  */
-function handleSetPin($input, $conn) {
+function handleSetPin($input, $conn, $smsService = null) {
     if (!isset($input['employee_id']) || !isset($input['new_pin'])) {
         throw new Exception('Employee ID and new PIN are required');
     }
@@ -130,7 +142,7 @@ function handleSetPin($input, $conn) {
     
     try {
         // Check if employee exists
-        $checkStmt = $conn->prepare("SELECT EmployeeID, FullName FROM tbl_employees WHERE EmployeeID = ?");
+        $checkStmt = $conn->prepare("SELECT EmployeeID, FullName, PhoneNumber FROM tbl_employees WHERE EmployeeID = ?");
         $checkStmt->execute([$employeeId]);
         
         if ($checkStmt->rowCount() === 0) {
@@ -167,12 +179,27 @@ function handleSetPin($input, $conn) {
             // Log error but don't fail
         }
         
+        // Send SMS notification
+        $smsSent = false;
+        if ($smsService && !empty($employee['PhoneNumber'])) {
+            try {
+                $smsService->sendTemplateMessage('pin_reset', $employee['PhoneNumber'], [
+                    'name' => $employee['FullName'],
+                    'pin' => $newPin
+                ]);
+                $smsSent = true;
+            } catch (Exception $smsEx) {
+                error_log('SMS notification failed for PIN set: ' . $smsEx->getMessage());
+            }
+        }
+        
         echo json_encode([
             'success' => true,
-            'message' => 'PIN set successfully for ' . $employee['FullName'],
+            'message' => 'PIN set successfully for ' . $employee['FullName'] . ($smsSent ? ' (SMS sent)' : ''),
             'data' => [
                 'employee_id' => $employeeId,
-                'employee_name' => $employee['FullName']
+                'employee_name' => $employee['FullName'],
+                'sms_sent' => $smsSent
             ]
         ]);
         
@@ -187,7 +214,7 @@ function handleSetPin($input, $conn) {
 /**
  * Reset PIN for specific employee
  */
-function handleResetPin($input, $conn) {
+function handleResetPin($input, $conn, $smsService = null) {
     if (!isset($input['employee_id'])) {
         throw new Exception('Employee ID required');
     }
@@ -196,7 +223,7 @@ function handleResetPin($input, $conn) {
     
     try {
         // Check if employee exists
-        $checkStmt = $conn->prepare("SELECT EmployeeID, FullName FROM tbl_employees WHERE EmployeeID = ?");
+        $checkStmt = $conn->prepare("SELECT EmployeeID, FullName, PhoneNumber FROM tbl_employees WHERE EmployeeID = ?");
         $checkStmt->execute([$employeeId]);
         
         if ($checkStmt->rowCount() === 0) {
@@ -228,12 +255,27 @@ function handleResetPin($input, $conn) {
             // Log error but don't fail the reset
         }
         
+        // Send SMS notification
+        $smsSent = false;
+        if ($smsService && !empty($employee['PhoneNumber'])) {
+            try {
+                $smsService->sendTemplateMessage('pin_reset', $employee['PhoneNumber'], [
+                    'name' => $employee['FullName'],
+                    'pin' => '1234'
+                ]);
+                $smsSent = true;
+            } catch (Exception $smsEx) {
+                error_log('SMS notification failed for PIN reset: ' . $smsEx->getMessage());
+            }
+        }
+        
         echo json_encode([
             'success' => true,
-            'message' => 'PIN reset successfully for ' . $employee['FullName'],
+            'message' => 'PIN reset successfully for ' . $employee['FullName'] . ($smsSent ? ' (SMS sent)' : ''),
             'data' => [
                 'employee_id' => $employeeId,
-                'employee_name' => $employee['FullName']
+                'employee_name' => $employee['FullName'],
+                'sms_sent' => $smsSent
             ]
         ]);
         
@@ -245,11 +287,15 @@ function handleResetPin($input, $conn) {
 /**
  * Reset ALL employee PINs
  */
-function handleResetAllPins($conn) {
+function handleResetAllPins($conn, $smsService = null) {
     try {
         // Count employees that will be affected
         $countStmt = $conn->query("SELECT COUNT(*) as count FROM tbl_employees WHERE CustomPIN IS NOT NULL");
         $count = $countStmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        // Get all employees with phone numbers for SMS notification
+        $empStmt = $conn->query("SELECT EmployeeID, FullName, PhoneNumber FROM tbl_employees WHERE CustomPIN IS NOT NULL AND PhoneNumber IS NOT NULL AND PhoneNumber != ''");
+        $affectedEmployees = $empStmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Reset all PINs in tbl_employees
         $resetStmt = $conn->exec("
@@ -260,6 +306,22 @@ function handleResetAllPins($conn) {
         
         // Also clear all employee_pins records
         $conn->exec("DELETE FROM employee_pins");
+        
+        // Send SMS to all affected employees
+        $smsSentCount = 0;
+        if ($smsService && !empty($affectedEmployees)) {
+            foreach ($affectedEmployees as $emp) {
+                try {
+                    $smsService->sendTemplateMessage('pin_reset', $emp['PhoneNumber'], [
+                        'name' => $emp['FullName'],
+                        'pin' => '1234'
+                    ]);
+                    $smsSentCount++;
+                } catch (Exception $smsEx) {
+                    error_log('SMS failed for bulk reset (' . $emp['EmployeeID'] . '): ' . $smsEx->getMessage());
+                }
+            }
+        }
         
         // Log the bulk reset action
         try {
@@ -274,9 +336,10 @@ function handleResetAllPins($conn) {
         
         echo json_encode([
             'success' => true,
-            'message' => 'All employee PINs reset successfully',
+            'message' => 'All employee PINs reset successfully' . ($smsSentCount > 0 ? " ($smsSentCount SMS sent)" : ''),
             'data' => [
-                'reset_count' => $resetStmt
+                'reset_count' => $resetStmt,
+                'sms_sent_count' => $smsSentCount
             ]
         ]);
         
