@@ -1,9 +1,0 @@
-com.signsync.attendance.app-appcompat-resources-1.1.0-0 C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\4f4173ddb94e657b5b012b8cdfb350b9\transformed\appcompat-resources-1.1.0\res
-com.signsync.attendance.app-appcompat-1.1.0-1 C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\5badac51a04814dfcea02a7f68a34b6f\transformed\appcompat-1.1.0\res
-com.signsync.attendance.app-core-1.1.0-2 C:\Users\Ebenezerbj\.gradle\caches\8.13\transforms\e335c89c76264bd64aa194a651a23d66\transformed\core-1.1.0\res
-com.signsync.attendance.app-pngs-3 C:\laragon\www\attendance_register\android_wear_app\app\build\generated\res\pngs\debug
-com.signsync.attendance.app-packageDebugResources-4 C:\laragon\www\attendance_register\android_wear_app\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.signsync.attendance.app-packageDebugResources-5 C:\laragon\www\attendance_register\android_wear_app\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.signsync.attendance.app-debug-6 C:\laragon\www\attendance_register\android_wear_app\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.signsync.attendance.app-debug-7 C:\laragon\www\attendance_register\android_wear_app\app\src\debug\res
-com.signsync.attendance.app-main-8 C:\laragon\www\attendance_register\android_wear_app\app\src\main\res

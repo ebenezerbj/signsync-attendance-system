@@ -86,51 +86,55 @@ yarn-error.log
 *.pdf.tmp
 
 # Android Build Artifacts
-android_app/.gradle/
-android_app/app/build/
-android_app/build/
-android_app/local.properties
-android_app/.idea/
-android_app/captures/
-android_app/.externalNativeBuild/
-android_app/.cxx/
-android_app/*.iml
-android_app/*.apk
-android_app/*.aar
-android_app/app/release/
-android_app/app/debug/
+android_phone_app/.gradle/
+android_phone_app/app/build/
+android_phone_app/build/
+android_phone_app/local.properties
+android_phone_app/.idea/
+android_phone_app/captures/
+android_phone_app/.externalNativeBuild/
+android_phone_app/.cxx/
+android_phone_app/*.iml
+android_phone_app/*.apk
+android_phone_app/*.aar
+android_phone_app/app/release/
+android_phone_app/app/debug/
+
+android_wear_app/.gradle/
+android_wear_app/app/build/
+android_wear_app/build/
+android_wear_app/local.properties
+android_wear_app/.idea/
+android_wear_app/captures/
+android_wear_app/.externalNativeBuild/
+android_wear_app/.cxx/
+android_wear_app/*.iml
+android_wear_app/*.apk
+android_wear_app/*.aar
+android_wear_app/app/release/
+android_wear_app/app/debug/
 
 # Gradle
-android_app/.gradle
-android_app/gradle/wrapper/gradle-wrapper.jar
+android_phone_app/.gradle
+android_wear_app/.gradle
 
 # IntelliJ IDEA
-android_app/.idea/
-android_app/*.iws
-android_app/*.iml
-android_app/*.ipr
-android_app/out/
-
-# Android Studio
-android_app/.idea/caches
-android_app/.idea/modules.xml
-android_app/.idea/workspace.xml
-android_app/.idea/navEditor.xml
-android_app/.idea/assetWizardSettings.xml
+android_phone_app/.idea/
+android_wear_app/.idea/
 
 # Keystore files
-android_app/*.jks
-android_app/*.keystore
+android_phone_app/*.jks
+android_phone_app/*.keystore
+android_wear_app/*.jks
+android_wear_app/*.keystore
 
 # lint
-android_app/lint/intermediates/
-android_app/lint/generated/
-android_app/lint/outputs/
-android_app/lint/tmp/
-android_app/lint-results*
+android_phone_app/lint/
+android_wear_app/lint/
 
 # Android Profiling
-android_app/*.hprof
+android_phone_app/*.hprof
+android_wear_app/*.hprof
 
 # Build output files
 build_output.txt
