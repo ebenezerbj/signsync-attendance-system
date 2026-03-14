@@ -404,6 +404,12 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
                             <span>Attendance</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="wellness_dashboard.php">
+                            <i class="bi bi-heart-pulse"></i>
+                            <span>Wellness</span>
+                        </a>
+                    </li>
                 </div>
                 
                 <div class="nav-section">
@@ -501,6 +507,9 @@ $branches = $conn->query("SELECT BranchID, BranchName FROM tbl_branches ORDER BY
                         <i class="bi bi-arrow-clockwise"></i>
                     </button>
                     <span class="text-muted">Last updated: <span id="lastUpdate"><?= date('M d, Y H:i') ?></span></span>
+                    <a href="logout.php" class="btn btn-outline-danger" title="Logout">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
                 </div>
             </div>
 

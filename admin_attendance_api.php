@@ -193,7 +193,6 @@ function handleGetEmployeeStatus($conn, $attendanceManager) {
             b.BranchName
         FROM tbl_employees e
         LEFT JOIN tbl_branches b ON e.BranchID = b.BranchID
-        WHERE e.IsActive = 1 OR e.IsActive IS NULL
         ORDER BY e.FullName
     ";
     
@@ -248,7 +247,6 @@ function handleGetEmployees($conn) {
     $sql = "
         SELECT EmployeeID, FullName, PhoneNumber
         FROM tbl_employees
-        WHERE IsActive = 1 OR IsActive IS NULL
         ORDER BY FullName
     ";
     

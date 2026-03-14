@@ -51,7 +51,7 @@ function handleGetStats($conn) {
     
     try {
         // Total employees
-        $stmt = $conn->query("SELECT COUNT(*) as total FROM tbl_employees WHERE IsActive = 1 OR IsActive IS NULL");
+        $stmt = $conn->query("SELECT COUNT(*) as total FROM tbl_employees");
         $totalEmployees = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         // Present today (employees who have clocked in)
@@ -91,7 +91,7 @@ function handleGetStats($conn) {
 }
 
 function handleGetRecentActivity($conn) {
-    $limit = $_POST['limit'] ?? 10;
+    $limit = (int)($_POST['limit'] ?? 10);
     $today = date('Y-m-d');
     
     try {
@@ -130,11 +130,11 @@ function handleGetRecentActivity($conn) {
             AND c.ClockOut IS NOT NULL)
             
             ORDER BY timestamp DESC
-            LIMIT ?
+            LIMIT $limit
         ";
         
         $stmt = $conn->prepare($sql);
-        $stmt->execute([$today, $today, $limit]);
+        $stmt->execute([$today, $today]);
         $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         echo json_encode([
