@@ -1,0 +1,14 @@
+.git
+.gitignore
+.vscode
+.idea
+*.md
+logs/
+tmp/
+node_modules/
+*.bat
+*.sln
+.env
+.env.*
+android-app/
+wearos-app/
