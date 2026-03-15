@@ -28,8 +28,8 @@ public class MainActivity extends Activity {
     private String authenticatedEmployeeName = "";
     private boolean needsPinSetup = false;
     
-    // Backend API URLs - Updated with your actual IP address
-    private static final String API_BASE = "http://192.168.0.189:8080"; // Your computer's IP
+    // Backend API URLs - Production Fly.io deployment
+    private static final String API_BASE = "https://signsync-attendance.fly.dev";
     private static final String PIN_API_URL = API_BASE + "/signsync_pin_api.php";
     private static final String CLOCKINOUT_API_URL = API_BASE + "/wearos_api.php";
     

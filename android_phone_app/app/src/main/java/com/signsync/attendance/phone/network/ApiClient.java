@@ -17,7 +17,7 @@ import okhttp3.Response;
 
 public class ApiClient {
     
-    private static final String BASE_URL = "http://192.168.0.189:8080";
+    private static final String BASE_URL = "https://signsync-attendance.fly.dev";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     
     private OkHttpClient client;

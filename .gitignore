@@ -2,6 +2,7 @@
 *.log
 *.tmp
 *.cache
+*.sql
 
 # Environment and Configuration
 .env

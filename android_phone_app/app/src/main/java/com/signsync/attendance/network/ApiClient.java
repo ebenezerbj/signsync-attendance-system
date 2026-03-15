@@ -18,8 +18,11 @@ public class ApiClient {
     // Option 3: For local testing - Laragon default
     private static final String BASE_URL_LOCAL = "http://localhost:8080/";
     
+    // Option 4: Production - Fly.io deployment
+    private static final String BASE_URL_PRODUCTION = "https://signsync-attendance.fly.dev/";
+    
     // ACTIVE CONFIGURATION - Change this to match your setup
-    private static final String BASE_URL = BASE_URL_DEVICE;
+    private static final String BASE_URL = BASE_URL_PRODUCTION;
     
     private static Retrofit retrofit = null;
 

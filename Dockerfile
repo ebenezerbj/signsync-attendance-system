@@ -57,9 +57,9 @@ COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
 # Copy custom PHP config
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 
-# Railway uses PORT environment variable
-ENV PORT=80
-EXPOSE ${PORT}
+# Fly.io uses PORT environment variable (default 8080)
+ENV PORT=8080
+EXPOSE 8080
 
 # Use a startup script to handle dynamic port
 COPY docker/start.sh /usr/local/bin/start.sh
