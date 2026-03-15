@@ -4,12 +4,8 @@ date_default_timezone_set('UTC');
 header('Content-Type: text/html; charset=utf-8');
 
 $message = '';
-
-if (isset($_GET['token'])) {
-    $token = $_GET['token'];
-} else {
-    $message = 'Invalid or missing token.';
-}
+$showForm = false;
+$token = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
     $token = $_POST['token'];
@@ -18,8 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
 
     if ($newPassword !== $confirmPassword) {
         $message = 'Passwords do not match.';
+        $showForm = true;
     } elseif (strlen($newPassword) < 6) {
         $message = 'Password must be at least 6 characters.';
+        $showForm = true;
     } else {
         // Check if token is valid and not expired
         $stmt = $conn->prepare("SELECT * FROM tbl_employees WHERE ResetToken = ? AND ResetTokenExpires >= ?");
@@ -27,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
-            // ✔️ Hash the password securely
             $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
 
             $stmt = $conn->prepare("UPDATE tbl_employees SET Password = ?, ResetToken = NULL, ResetTokenExpires = NULL WHERE EmployeeID = ?");
@@ -38,6 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
             $message = 'Invalid or expired token.';
         }
     }
+} elseif (isset($_GET['token']) && !empty($_GET['token'])) {
+    $token = $_GET['token'];
+    // Verify token exists before showing form
+    $stmt = $conn->prepare("SELECT EmployeeID FROM tbl_employees WHERE ResetToken = ? AND ResetTokenExpires >= ?");
+    $stmt->execute([$token, date('Y-m-d H:i:s')]);
+    if ($stmt->fetch()) {
+        $showForm = true;
+    } else {
+        $message = 'Invalid or expired token.';
+    }
+} else {
+    $message = 'Invalid or missing token.';
 }
 ?>
 <!DOCTYPE html>
@@ -54,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['token'])) {
       <div class="alert alert-info"><?= $message ?></div>
     <?php endif; ?>
 
-    <?php if (!isset($_POST['password']) && isset($token) && $token && !$message): ?>
+    <?php if ($showForm): ?>
       <form method="POST">
         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
         <div class="mb-3">

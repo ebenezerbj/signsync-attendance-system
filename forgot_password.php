@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $phone = '233' . substr($phone, 1);
         }
 
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
         $resetLink = "{$protocol}://{$_SERVER['HTTP_HOST']}/reset_password.php?token=$token";
         $smsText = "Hi {$user['FullName']}, reset your password here: $resetLink (valid for 1 hour)";
 
