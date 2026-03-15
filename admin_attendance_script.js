@@ -1,7 +1,7 @@
 // Admin Attendance Management JavaScript
 class AttendanceAdminManager {
     constructor() {
-        this.apiBase = window.location.origin + '/attendance_register';
+        this.apiBase = window.location.origin;
         this.currentSection = 'dashboard';
         this.attendanceTable = null;
         this.clockinoutTable = null;
