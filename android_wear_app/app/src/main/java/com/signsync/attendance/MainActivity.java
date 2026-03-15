@@ -210,13 +210,12 @@ public class MainActivity extends Activity {
                 
                 JSONObject response = new JSONObject(result);
                 if (response.getBoolean("success")) {
-                    JSONObject data = response.getJSONObject("data");
-                    authenticatedEmployeeId = data.getString("employee_id");
-                    authenticatedEmployeeName = data.getString("name");
+                    authenticatedEmployeeId = response.getString("employeeId");
+                    authenticatedEmployeeName = response.getString("employeeName");
                     
                     // Check if user needs PIN setup
-                    boolean needsSetup = data.optBoolean("needs_pin_setup", false);
-                    boolean hasCustomPin = data.optBoolean("has_custom_pin", false);
+                    boolean needsSetup = response.optBoolean("needs_pin_setup", false);
+                    boolean hasCustomPin = response.optBoolean("has_custom_pin", false);
                     
                     if (needsSetup && !hasCustomPin) {
                         // Show PIN setup dialog
